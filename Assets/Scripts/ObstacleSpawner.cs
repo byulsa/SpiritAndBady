@@ -11,8 +11,7 @@ public class ObstacleSpawner : MonoBehaviour
     public bool isTestMode = true;
     public KeyCode testSpawnKey = KeyCode.Space;
 
-    // TODO: BPM 담당 스크립트 연동 후 아래 주석 해제
-    // private RhythmManager rhythmManager;
+    [SerializeField] private RythmManager rythmManager;
 
     void Update()
     {
@@ -20,7 +19,7 @@ public class ObstacleSpawner : MonoBehaviour
             StartCoroutine(SpawnAfterDelay(GetBarDuration()));
     }
 
-    // 리듬 노드 담당이 구간 끝나면 호출
+    // 1번 담당이 구간 끝나면 호출
     public void OnRhythmSectionComplete()
     {
         StartCoroutine(SpawnAfterDelay(GetBarDuration()));
@@ -32,16 +31,17 @@ public class ObstacleSpawner : MonoBehaviour
         SpawnObstacle();
     }
 
-    // TODO: BPM 담당한테서 받아오는 걸로 교체 예정
     float GetBarDuration()
     {
-        return 2f; // BPM 담당 연동 전까지 임시값
+        if (rythmManager == null) return 2f; // 연동 안됐을 때 기본값
+        return rythmManager.SecondsPerMeasure;
     }
 
     public void OnObstaclePassed()
     {
-        // TODO: BPM 담당한테 스테이지 증가 알리기
-        // rhythmManager.OnStageCleared();
+        // BPM 증가 - 다음 마디부터 적용
+        if (rythmManager != null)
+            rythmManager.ChangeBpmOnNextMeasure(rythmManager.BPM + 10f);
     }
 
     public void OnObstacleFailed()

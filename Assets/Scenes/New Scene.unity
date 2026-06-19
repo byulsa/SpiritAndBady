@@ -364,8 +364,8 @@ Transform:
   m_GameObject: {fileID: 418732811}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: -4.77, y: -2.91, z: 2.0998}
-  m_LocalScale: {x: 3.1566, y: 7.2082, z: 1}
+  m_LocalPosition: {x: -4.85, y: 5.15, z: 2.0998}
+  m_LocalScale: {x: 3, y: 3.6, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -396,7 +396,7 @@ Transform:
   m_GameObject: {fileID: 929905030}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.19141, y: 2.79614, z: 2.0998}
+  m_LocalPosition: {x: -3.19, y: 12.38, z: 2.0998}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -557,7 +557,7 @@ Transform:
   m_GameObject: {fileID: 1570652731}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 16.64, y: -3.1, z: 2.0998}
+  m_LocalPosition: {x: 16.641409, y: 5, z: 2.0998}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -706,7 +706,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BackgroundLoop
   minSpeed: 1
-  maxSpeed: 100
+  maxSpeed: 50
   isTestMode: 1
   speedUpKey: 275
   speedDownKey: 276
@@ -720,7 +720,7 @@ Transform:
   m_GameObject: {fileID: 1682535911}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.19141, y: 2.79614, z: 2.0998}
+  m_LocalPosition: {x: -3.19, y: 12.38, z: 2.0998}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
