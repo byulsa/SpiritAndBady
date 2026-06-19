@@ -220,6 +220,7 @@ MonoBehaviour:
   - {fileID: 453561359}
   - {fileID: 1397421300}
   PlayerInput: {fileID: 1443290742}
+  NoteGenerator: {fileID: 2091660996}
 --- !u!1 &295436335
 GameObject:
   m_ObjectHideFlags: 0
@@ -980,7 +981,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &470588035
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2156,6 +2157,7 @@ MonoBehaviour:
   rythmManager: {fileID: 2091660994}
   noteGenerator: {fileID: 2091660996}
   measureGenerator: {fileID: 2091660998}
+  InputGuidePanel: {fileID: 470588034}
   selectionMeasureCount: 2
   beginOnStart: 1
 --- !u!1 &1466697156

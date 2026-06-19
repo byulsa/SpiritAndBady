@@ -4,16 +4,18 @@ public class WaveQueueUI : MonoBehaviour
 {
     [SerializeField] private QueueSlot[] Slots;
     [SerializeField] private PatternInput PlayerInput;
-
+    [SerializeField] private NoteGenerator NoteGenerator;
     private void OnEnable()
     {
         PlayerInput.OnSelectionTimedOut += Clear;
         PlayerInput.OnMeasureSelected += OnMeasureSelected;
+        NoteGenerator.OnWaveMeasureStarted += OnWaveMeasureStarted;
     }
     private void OnDisable()
     {
         PlayerInput.OnSelectionTimedOut -= Clear;
         PlayerInput.OnMeasureSelected -= OnMeasureSelected;
+        NoteGenerator.OnWaveMeasureStarted -= OnWaveMeasureStarted;
     }
     private void OnMeasureSelected(int SlotIndex, int Difficulty)
     {
@@ -23,6 +25,14 @@ public class WaveQueueUI : MonoBehaviour
             return;
         }
         Slots[SlotIndex].SetSlot(Difficulty);
+    }
+    private void OnWaveMeasureStarted(int index)
+    {
+        for (int i = 0; i < Slots.Length - 1 - index; i++)
+        {
+            Slots[i].SetSlot(Slots[i + 1].Difficulty);
+        }
+        Slots[Slots.Length - 1 - index].Clear();
     }
     public void Clear()
     {
