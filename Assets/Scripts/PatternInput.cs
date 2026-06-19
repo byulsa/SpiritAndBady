@@ -6,7 +6,6 @@ public class PatternInput : MonoBehaviour
     public MeasureData measure1;
     public MeasureData measure2;
     public MeasureData measure3;
-    public MeasureData measure4;
 
     [Header("Generator")]
     //public NoteGenerator noteGenerator;
@@ -38,11 +37,6 @@ public class PatternInput : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.D))
         {
             AddMeasure(measure3);
-        }
-
-        if (Input.GetKeyDown(KeyCode.F))
-        {
-            AddMeasure(measure4);
         }
     }
 
