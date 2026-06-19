@@ -15,9 +15,9 @@ MonoBehaviour:
   beats:
   - subdivisions: 2
     noteTicks: 0000000001000000
-  - subdivisions: 2
-    noteTicks: 0000000001000000
   - subdivisions: 1
     noteTicks: 00000000
+  - subdivisions: 2
+    noteTicks: 0000000001000000
   - subdivisions: 1
     noteTicks: 00000000

@@ -370,6 +370,7 @@ GameObject:
   - component: {fileID: 1494128900}
   - component: {fileID: 1494128901}
   - component: {fileID: 1494128902}
+  - component: {fileID: 1494128903}
   m_Layer: 0
   m_Name: GameRoot
   m_TagString: Untagged
@@ -522,6 +523,27 @@ MonoBehaviour:
   bpm: 120
   playOnStart: 1
   startDelay: 2
+--- !u!114 &1494128903
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1494128898}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: efef64b5b1c2f40618009881f7fa826f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NoteGeneratorTest
+  rythmManager: {fileID: 1494128902}
+  noteGenerator: {fileID: 1494128900}
+  testWave:
+  - {fileID: 11400000, guid: a8c34013c5c994f62ab217de940f8b2b, type: 2}
+  - {fileID: 11400000, guid: 716cd542223d6498eaa41aff202ddaec, type: 2}
+  - {fileID: 11400000, guid: 9b60fc33bb3ff42a4923c1d03dd31d1d, type: 2}
+  - {fileID: 11400000, guid: e2659f393084145e1a382356776d8ad7, type: 2}
+  startAutomatically: 1
+  replayKey: 32
 --- !u!1 &1743320698
 GameObject:
   m_ObjectHideFlags: 0

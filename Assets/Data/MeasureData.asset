@@ -17,7 +17,7 @@ MonoBehaviour:
     noteTicks: 00000000
   - subdivisions: 1
     noteTicks: 00000000
-  - subdivisions: 2
-    noteTicks: 01000000
+  - subdivisions: 1
+    noteTicks: 00000000
   - subdivisions: 1
     noteTicks: 00000000
