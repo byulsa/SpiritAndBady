@@ -2,21 +2,21 @@ using UnityEngine;
 
 public class TrainSpeedController : MonoBehaviour
 {
-    [Header("³ëÆ® Å¸ÀÔº° ¼Óµµ (km)")]
+    [Header("ï¿½ï¿½Æ® Å¸ï¿½Ôºï¿½ ï¿½Óµï¿½ (km)")]
     public float easySpeed = 10f;
     public float normalSpeed = 20f;
     public float hardSpeed = 30f;
 
-    [Header("ÆÇÁ¤ ¼³Á¤")]
-    // Miss¸¸ ¹Ì¿Ï¼ö·Î Ã³¸®, Perfect/GoodÀº ¿Ï¼ö
+    [Header("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½")]
+    // Missï¿½ï¿½ ï¿½Ì¿Ï¼ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½, Perfect/Goodï¿½ï¿½ ï¿½Ï¼ï¿½
 
-    private float[] selectedNoteSpeeds = new float[4]; // ¼±ÅÃÇÑ ³ëÆ® 4°³ ¼Óµµ
-    private float maxSpeed = 0f;      // ¼±ÅÃÇÑ ³ëÆ® ÇÕ»ê ÃÖ´ë ¼Óµµ
-    private float currentSpeed = 0f;  // ÇöÀç ½ÇÁ¦ ¼Óµµ
+    private float[] selectedNoteSpeeds = new float[4]; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ® 4ï¿½ï¿½ ï¿½Óµï¿½
+    private float maxSpeed = 0f;      // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ® ï¿½Õ»ï¿½ ï¿½Ö´ï¿½ ï¿½Óµï¿½
+    private float currentSpeed = 0f;  // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Óµï¿½
 
-    private int currentSectionIndex = 0; // ÇöÀç ÁøÇà ÁßÀÎ ±¸°£ (0~3)
-    private int totalNotes = 0;          // ÇöÀç ±¸°£ ÀüÃ¼ ³ëÆ® ¼ö
-    private int hitNotes = 0;            // ÇöÀç ±¸°£ ¿Ï¼ö ³ëÆ® ¼ö (Perfect + Good)
+    private int currentSectionIndex = 0; // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (0~3)
+    private int totalNotes = 0;          // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼ ï¿½ï¿½Æ® ï¿½ï¿½
+    private int hitNotes = 0;            // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ï¼ï¿½ ï¿½ï¿½Æ® ï¿½ï¿½ (Perfect + Good)
 
     private BackgroundLoop backgroundLoop;
     private Judgement judgement;
@@ -46,8 +46,8 @@ public class TrainSpeedController : MonoBehaviour
         //     judgement.OnJudged -= HandleJudge;
     }
 
-    // 2¹ø ´ã´çÀÌ ³ëÆ® ¼±ÅÃ ¿Ï·á ÈÄ È£Ãâ
-    // ¿¹: SetSelectedNotes(new NoteType[] { NoteType.Normal, NoteType.Normal, NoteType.Easy, NoteType.Easy })
+    // 2ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ ï¿½Ï·ï¿½ ï¿½ï¿½ È£ï¿½ï¿½
+    // ï¿½ï¿½: SetSelectedNotes(new NoteType[] { NoteType.Normal, NoteType.Normal, NoteType.Easy, NoteType.Easy })
     public void SetSelectedNotes(float[] noteSpeeds)
     {
         selectedNoteSpeeds = noteSpeeds;
@@ -55,33 +55,33 @@ public class TrainSpeedController : MonoBehaviour
         foreach (float speed in noteSpeeds)
             maxSpeed += speed;
 
-        currentSpeed = maxSpeed; // ½ÃÀÛÀº ÃÖ´ë ¼Óµµ·Î
+        currentSpeed = maxSpeed; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½Óµï¿½ï¿½ï¿½
         currentSectionIndex = 0;
         totalNotes = 0;
         hitNotes = 0;
 
         backgroundLoop.SetSpeed(currentSpeed);
-        Debug.Log($"ÃÖ´ë ¼Óµµ ¼³Á¤: {maxSpeed}km");
+        Debug.Log($"ï¿½Ö´ï¿½ ï¿½Óµï¿½ ï¿½ï¿½ï¿½ï¿½: {maxSpeed}km");
     }
 
-    // ±¸°£ ½ÃÀÛ ½Ã È£Ãâ - 1¹ø ´ã´çÀÌ ±¸°£ ½ÃÀÛÇÒ ¶§ ÀüÃ¼ ³ëÆ® ¼ö ³Ñ°ÜÁà¾ß ÇÔ
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ È£ï¿½ï¿½ - 1ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½Ã¼ ï¿½ï¿½Æ® ï¿½ï¿½ ï¿½Ñ°ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
     public void OnSectionStart(int noteCount)
     {
         totalNotes = noteCount;
         hitNotes = 0;
-        Debug.Log($"±¸°£ {currentSectionIndex + 1} ½ÃÀÛ / ÀüÃ¼ ³ëÆ®: {totalNotes}");
+        Debug.Log($"ï¿½ï¿½ï¿½ï¿½ {currentSectionIndex + 1} ï¿½ï¿½ï¿½ï¿½ / ï¿½ï¿½Ã¼ ï¿½ï¿½Æ®: {totalNotes}");
     }
 
-    // Judgement ÀÌº¥Æ®·Î ÀÚµ¿ ¼ö½Å
+    // Judgement ï¿½Ìºï¿½Æ®ï¿½ï¿½ ï¿½Úµï¿½ ï¿½ï¿½ï¿½ï¿½
     void HandleJudge(JudgeType result)
     {
         if (result == JudgeType.Perfect || result == JudgeType.Good)
             hitNotes++;
 
-        Debug.Log($"ÆÇÁ¤: {result} / ¿Ï¼ö: {hitNotes}/{totalNotes}");
+        Debug.Log($"ï¿½ï¿½ï¿½ï¿½: {result} / ï¿½Ï¼ï¿½: {hitNotes}/{totalNotes}");
     }
 
-    // ±¸°£ ¿Ï·á ½Ã È£Ãâ - 1¹ø ´ã´ç ¶Ç´Â NoteGenerator.OnWaveFinished ¿¡¼­ È£Ãâ
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½Ï·ï¿½ ï¿½ï¿½ È£ï¿½ï¿½ - 1ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Ç´ï¿½ NoteGenerator.OnWaveFinished ï¿½ï¿½ï¿½ï¿½ È£ï¿½ï¿½
     public void OnSectionComplete()
     {
         if (totalNotes == 0) return;
@@ -96,7 +96,7 @@ public class TrainSpeedController : MonoBehaviour
 
         backgroundLoop.SetSpeed(currentSpeed);
 
-        Debug.Log($"±¸°£ {currentSectionIndex + 1} ¿Ï·á / ¿Ï¼öÀ²: {completionRate * 100f}% / È¹µæ: {actualSpeed}km / ÇöÀç ¼Óµµ: {currentSpeed}km");
+        Debug.Log($"ï¿½ï¿½ï¿½ï¿½ {currentSectionIndex + 1} ï¿½Ï·ï¿½ / ï¿½Ï¼ï¿½ï¿½ï¿½: {completionRate * 100f}% / È¹ï¿½ï¿½: {actualSpeed}km / ï¿½ï¿½ï¿½ï¿½ ï¿½Óµï¿½: {currentSpeed}km");
 
         currentSectionIndex++;
     }
@@ -117,6 +117,6 @@ public class TrainSpeedController : MonoBehaviour
         easySpeed = easy;
         normalSpeed = normal;
         hardSpeed = hard;
-        Debug.Log($"³ëÆ® ¼Óµµ ¼³Á¤ - Easy: {easy} / Normal: {normal} / Hard: {hard}");
+        Debug.Log($"ï¿½ï¿½Æ® ï¿½Óµï¿½ ï¿½ï¿½ï¿½ï¿½ - Easy: {easy} / Normal: {normal} / Hard: {hard}");
     }
 }

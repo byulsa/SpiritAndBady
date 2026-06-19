@@ -10,11 +10,16 @@ public class PatternInput : MonoBehaviour
     [FormerlySerializedAs("Generator")]
     [SerializeField] private MeasureGenerator measureGenerator;
 
+    [Header("UI")]
+    [SerializeField] private GameObject InputGuidePanel;
+
     [Header("Selection")]
     [SerializeField] private int selectionMeasureCount = 2;
     [SerializeField] private bool beginOnStart = true;
 
     public event Action OnSelectionTimedOut;
+    public event Action<int, int> OnMeasureSelected;
+    private int Counter = 0;
 
     public bool IsSelecting { get; private set; }
     public int SelectionEndMeasureIndex { get; private set; } = -1;
@@ -25,6 +30,8 @@ public class PatternInput : MonoBehaviour
     {
         FindDependencies();
         SubscribeToRythmManager();
+
+        InputGuidePanel?.SetActive(true);
     }
 
     private void Start()
@@ -49,6 +56,7 @@ public class PatternInput : MonoBehaviour
             rythmManager.OnMeasureStart -= HandleMeasureStart;
             isSubscribed = false;
         }
+        InputGuidePanel?.SetActive(false);
     }
 
     private void Update()
@@ -86,7 +94,7 @@ public class PatternInput : MonoBehaviour
             Debug.LogError("Pattern selection must begin on a running rhythm measure.");
             return;
         }
-
+        Counter = 0;
         measureGenerator.ResetWave();
         SelectionEndMeasureIndex =
             rythmManager.CurrentMeasureIndex + Mathf.Max(1, selectionMeasureCount);
@@ -100,15 +108,19 @@ public class PatternInput : MonoBehaviour
     private void AddDifficulty(int difficulty)
     {
         MeasureData measure = measureGenerator.MakeMeasure(difficulty);
+        if (measure == null)
+        {
+            return;
+        }
 
-        if (measure == null || !measureGenerator.IsWaveReady)
+        OnMeasureSelected?.Invoke(Counter++, difficulty);
+        if (!measureGenerator.IsWaveReady)
         {
             return;
         }
 
         IsSelecting = false;
         MeasureData[] wave = measureGenerator.GetWaveMeasures();
-
         rythmManager.RunOnNextMeasure(() => noteGenerator.WaveStart(wave));
         Debug.Log("Pattern selection complete. Wave queued for the next measure.");
     }
@@ -156,7 +168,6 @@ public class PatternInput : MonoBehaviour
             measureGenerator = FindAnyObjectByType<MeasureGenerator>();
         }
     }
-
     private void SubscribeToRythmManager()
     {
         if (rythmManager == null || isSubscribed)
@@ -167,7 +178,6 @@ public class PatternInput : MonoBehaviour
         rythmManager.OnMeasureStart += HandleMeasureStart;
         isSubscribed = true;
     }
-
     private void OnValidate()
     {
         if (selectionMeasureCount < 1)

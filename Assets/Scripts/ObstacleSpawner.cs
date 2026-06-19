@@ -41,8 +41,8 @@ public class ObstacleSpawner : MonoBehaviour
 
     void Update()
     {
-        if (isTestMode && Input.GetKeyDown(testSpawnKey))
-            StartCoroutine(SpawnAfterDelay(GetBarDuration()));
+        // if (isTestMode && Input.GetKeyDown(testSpawnKey))
+        //     StartCoroutine(SpawnAfterDelay(GetBarDuration()));
     }
 
     public void OnRhythmSectionComplete()
