@@ -3,11 +3,11 @@ using System.Collections;
 
 public class ObstacleSpawner : MonoBehaviour
 {
-    [Header("��ֹ� ����")]
+    [Header("장애물")]
     public GameObject[] obstaclePrefabs;
     public Transform spawnPoint;
 
-    [Header("�׽�Ʈ ����")]
+    [Header("테스트용 소환")]
     public bool isTestMode = true;
     public KeyCode testSpawnKey = KeyCode.Space;
 
