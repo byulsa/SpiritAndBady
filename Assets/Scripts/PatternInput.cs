@@ -57,7 +57,6 @@ public class PatternInput : MonoBehaviour
         {
             return;
         }
-
         if (Input.GetKeyDown(KeyCode.A))
         {
             AddDifficulty(0);

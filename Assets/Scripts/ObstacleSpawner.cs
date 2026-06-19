@@ -13,17 +13,30 @@ public class ObstacleSpawner : MonoBehaviour
 
     [SerializeField] private RythmManager rythmManager;
     [SerializeField] private NoteGenerator noteGenerator;
+    [SerializeField] private PatternInput Input;
 
-    private void Start()
+    private void OnEnable()
     {
         if (noteGenerator != null)
+        {
             noteGenerator.OnWaveFinished += OnRhythmSectionComplete;
+        }
+        if (Input != null)
+        {
+            Input.OnSelectionTimedOut += OnRhythmSectionComplete;
+        }
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
         if (noteGenerator != null)
+        {
             noteGenerator.OnWaveFinished -= OnRhythmSectionComplete;
+        }
+        if (Input != null)
+        {
+            Input.OnSelectionTimedOut -= OnRhythmSectionComplete;
+        }
     }
 
     void Update()
