@@ -5,6 +5,7 @@ public class NoteGenerator : MonoBehaviour
 {
     [Header("Rhythm")]
     [SerializeField] private RythmManager rythmManager;
+    [SerializeField] private Judgement judgement;
 
     [Header("SFX")]
     public AudioSource Audio;
@@ -136,6 +137,7 @@ public class NoteGenerator : MonoBehaviour
         if (NotePrefab != null && SpawnPoint != null && JudgementPoint != null)
         {
             GameObject note = Instantiate(NotePrefab, SpawnPoint.position, SpawnPoint.rotation);
+            judgement.notes.Add(note.transform);
             TimedNoteMover mover = note.GetComponent<TimedNoteMover>();
 
             if (mover == null)
