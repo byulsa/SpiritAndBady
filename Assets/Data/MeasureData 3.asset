@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8d3c9ae3c06e0493eb5be81cf6a51e5d, type: 3}
-  m_Name: MeasureData
+  m_Name: MeasureData 3
   m_EditorClassIdentifier: Assembly-CSharp::MeasureData
   beats:
-  - subdivisions: 1
-    noteTicks: 00000000
-  - subdivisions: 1
-    noteTicks: 00000000
+  - subdivisions: 4
+    noteTicks: 000000000200000003000000
   - subdivisions: 2
-    noteTicks: 01000000
+    noteTicks: 0000000001000000
+  - subdivisions: 1
+    noteTicks: 00000000
   - subdivisions: 1
     noteTicks: 00000000

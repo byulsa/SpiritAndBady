@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class NoteGenerator : MonoBehaviour
@@ -10,140 +11,176 @@ public class NoteGenerator : MonoBehaviour
     public AudioSource Audio;
     public AudioClip SFX;
 
-    [Header("Chart")]
-    public MeasureData[] measures;
-
-    private int nextNoteIndex;
-    private NoteTiming[] noteTimings;
-    private float timer;
+    [Header("Note")]
+    public GameObject NotePrefab;
+    public Transform SpawnPoint;
+    public Transform JudgementPoint;
 
     private const int BeatsPerMeasure = 4;
+    private const int MeasuresPerWave = 4;
 
-    private void Awake()
+    private readonly List<NoteTiming> currentNoteTimings = new List<NoteTiming>();
+
+    private MeasureData[] currentWave;
+    private int currentMeasureIndex;
+    private int nextNoteIndex;
+    private float phaseElapsedTime;
+    private float measureLength;
+    private float secondsPerBeat;
+    private WavePhase phase;
+    private bool isWavePlaying;
+
+    public void WaveStart(MeasureData[] input)
     {
-        BuildNoteTimings();
+        if (input == null || input.Length != MeasuresPerWave)
+        {
+            Debug.LogError($"WaveStart requires exactly {MeasuresPerWave} MeasureData objects.");
+            return;
+        }
+
+        if (BPM <= 0f)
+        {
+            Debug.LogError("BPM must be greater than 0.");
+            return;
+        }
+
+        currentWave = (MeasureData[])input.Clone();
+        secondsPerBeat = 60f / BPM;
+        measureLength = secondsPerBeat * BeatsPerMeasure;
+        currentMeasureIndex = 0;
+        phaseElapsedTime = -StartDelay;
+        phase = WavePhase.Guide;
+        isWavePlaying = true;
+
+        BuildCurrentMeasureTimings();
+        Debug.Log($"Wave Start: BPM {BPM}, Measure Length {measureLength:F3}s");
     }
 
-    private void OnEnable()
+    private void Update()
     {
-        nextNoteIndex = 0;
-        timer = 0f;
-    }
-
-    void Update()
-    {
-        if (noteTimings == null || nextNoteIndex >= noteTimings.Length)
+        if (!isWavePlaying)
         {
             return;
         }
 
-        timer += Time.deltaTime;
-        float chartTime = timer - StartDelay;
+        phaseElapsedTime += Time.deltaTime;
+        while (isWavePlaying)
+        {
+            if (phase == WavePhase.Guide)
+            {
+                GenerateDueNotes();
 
-        if (chartTime < 0f)
+                if (phaseElapsedTime < measureLength)
+                {
+                    break;
+                }
+
+                phaseElapsedTime -= measureLength;
+                phase = WavePhase.Judgement;
+                Debug.Log($"Judgement Start: measure {currentMeasureIndex + 1}");
+                continue;
+            }
+
+            if (phaseElapsedTime < measureLength)
+            {
+                break;
+            }
+
+            phaseElapsedTime -= measureLength;
+            currentMeasureIndex++;
+
+            if (currentMeasureIndex >= currentWave.Length)
+            {
+                isWavePlaying = false;
+                Debug.Log("Wave Complete");
+                break;
+            }
+
+            phase = WavePhase.Guide;
+            BuildCurrentMeasureTimings();
+            Debug.Log($"Guide Start: measure {currentMeasureIndex + 1}");
+        }
+    }
+
+    private void GenerateDueNotes()
+    {
+        if (phaseElapsedTime < 0f)
         {
             return;
         }
 
-        while (nextNoteIndex < noteTimings.Length && chartTime >= noteTimings[nextNoteIndex].time)
+        while (nextNoteIndex < currentNoteTimings.Count &&
+               currentNoteTimings[nextNoteIndex].time <= phaseElapsedTime)
         {
-            GenerateNote(noteTimings[nextNoteIndex]);
+            GenerateNote(currentNoteTimings[nextNoteIndex]);
             nextNoteIndex++;
         }
     }
 
     private void GenerateNote(NoteTiming noteTiming)
     {
+        if (NotePrefab != null && SpawnPoint != null && JudgementPoint != null)
+        {
+            GameObject note = Instantiate(NotePrefab, SpawnPoint.position, SpawnPoint.rotation);
+            TimedNoteMover mover = note.GetComponent<TimedNoteMover>();
+
+            if (mover == null)
+            {
+                mover = note.AddComponent<TimedNoteMover>();
+            }
+
+            float judgementTime = noteTiming.time + measureLength;
+            mover.Initialize(
+                SpawnPoint.position,
+                JudgementPoint.position,
+                phaseElapsedTime,
+                judgementTime);
+        }
+
         if (Audio != null && SFX != null)
         {
             Audio.PlayOneShot(SFX);
         }
-        Debug.Log($"Note: measure {noteTiming.measureIndex + 1}, beat {noteTiming.beatIndex + 1}, tick {noteTiming.tick}, World Time {timer}");
+
+        Debug.Log(
+            $"Note: measure {currentMeasureIndex + 1}, " +
+            $"beat {noteTiming.beatIndex + 1}, tick {noteTiming.tick}");
     }
 
-    private void BuildNoteTimings()
+    private void BuildCurrentMeasureTimings()
     {
-        if (measures == null)
+        currentNoteTimings.Clear();
+        nextNoteIndex = 0;
+
+        MeasureData measure = currentWave[currentMeasureIndex];
+
+        if (measure == null || measure.beats == null)
         {
-            noteTimings = new NoteTiming[0];
             return;
         }
 
-        int noteCount = CountNotes();
-        noteTimings = new NoteTiming[noteCount];
+        int beatCount = Mathf.Min(BeatsPerMeasure, measure.beats.Length);
 
-        int index = 0;
-
-        for (int measureIndex = 0; measureIndex < measures.Length; measureIndex++)
+        for (int beatIndex = 0; beatIndex < beatCount; beatIndex++)
         {
-            MeasureData measure = measures[measureIndex];
+            BeatData beat = measure.beats[beatIndex];
 
-            if (measure == null || measure.beats == null)
+            if (beat == null || beat.noteTicks == null || beat.subdivisions <= 0)
             {
                 continue;
             }
 
-            for (int beatIndex = 0; beatIndex < Mathf.Min(BeatsPerMeasure, measure.beats.Length); beatIndex++)
+            for (int noteIndex = 0; noteIndex < beat.noteTicks.Length; noteIndex++)
             {
-                BeatData beat = measure.beats[beatIndex];
+                int tick = beat.noteTicks[noteIndex];
+                float tickOffset = (float)tick / beat.subdivisions * secondsPerBeat;
+                float noteTime = beatIndex * secondsPerBeat + tickOffset;
 
-                if (beat == null || beat.noteTicks == null || beat.subdivisions <= 0)
-                {
-                    continue;
-                }
-
-                for (int noteIndex = 0; noteIndex < beat.noteTicks.Length; noteIndex++)
-                {
-                    int tick = beat.noteTicks[noteIndex];
-                    float time = GetNoteTime(measureIndex, beatIndex, tick, beat.subdivisions);
-
-                    noteTimings[index] = new NoteTiming(measureIndex, beatIndex, tick, time);
-                    index++;
-                }
+                currentNoteTimings.Add(new NoteTiming(beatIndex, tick, noteTime));
             }
         }
 
-        System.Array.Sort(noteTimings, (a, b) => a.time.CompareTo(b.time));
-    }
-
-    private int CountNotes()
-    {
-        int count = 0;
-
-        foreach (MeasureData measure in measures)
-        {
-            if (measure == null || measure.beats == null)
-            {
-                continue;
-            }
-
-            foreach (BeatData beat in measure.beats)
-            {
-                if (beat == null || beat.noteTicks == null || beat.subdivisions <= 0)
-                {
-                    continue;
-                }
-
-                count += beat.noteTicks.Length;
-            }
-        }
-
-        return count;
-    }
-
-    private float GetNoteTime(int measureIndex, int beatIndex, int tick, int subdivisions)
-    {
-        float secondsPerBeat = 60f / BPM;
-        float measureStartTime = measureIndex * GetMeasureLength();
-        float beatStartTime = beatIndex * secondsPerBeat;
-        float tickOffsetTime = ((float)tick / subdivisions) * secondsPerBeat;
-
-        return measureStartTime + beatStartTime + tickOffsetTime;
-    }
-
-    private float GetMeasureLength()
-    {
-        return 60f / BPM * BeatsPerMeasure;
+        currentNoteTimings.Sort((a, b) => a.time.CompareTo(b.time));
     }
 
     private void OnValidate()
@@ -158,16 +195,22 @@ public class NoteGenerator : MonoBehaviour
             StartDelay = 0f;
         }
     }
+
+    private enum WavePhase
+    {
+        Guide,
+        Judgement
+    }
 }
+
 public struct NoteTiming
 {
-    public int measureIndex;
     public int beatIndex;
     public int tick;
     public float time;
-    public NoteTiming(int measureIndex, int beatIndex, int tick, float time)
+
+    public NoteTiming(int beatIndex, int tick, float time)
     {
-        this.measureIndex = measureIndex;
         this.beatIndex = beatIndex;
         this.tick = tick;
         this.time = time;
