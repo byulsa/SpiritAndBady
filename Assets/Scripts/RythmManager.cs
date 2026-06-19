@@ -8,7 +8,6 @@ public class RythmManager : MonoBehaviour
     [SerializeField] private float bpm = 120f;
     [SerializeField] private bool playOnStart = true;
     [SerializeField] private float startDelay;
-    
     public const int BeatsPerMeasure = 4;
 
     public event Action<int> OnBeat;
@@ -125,6 +124,20 @@ public class RythmManager : MonoBehaviour
             : CurrentMeasureIndex + 1;
 
         scheduledActions.Add(new ScheduledMeasureAction(targetMeasure, action));
+    }
+
+    public double GetNextMeasureDspTime(float beatPosition)
+    {
+        if (!IsRunning || CurrentMeasureIndex < 0)
+        {
+            return AudioSettings.dspTime;
+        }
+
+        float nextMeasureBpm = pendingBpm ?? currentBpm;
+        double nextMeasureStart = CurrentMeasureStartDspTime + SecondsPerMeasure;
+        double nextMeasureSecondsPerBeat = 60d / nextMeasureBpm;
+
+        return nextMeasureStart + beatPosition * nextMeasureSecondsPerBeat;
     }
 
     private void ProcessBeat(double beatDspTime)

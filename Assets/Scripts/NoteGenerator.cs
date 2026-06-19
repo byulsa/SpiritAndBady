@@ -3,9 +3,8 @@ using UnityEngine;
 
 public class NoteGenerator : MonoBehaviour
 {
-    [Header("Timing")]
-    public float BPM = 120f;
-    public float StartDelay = 2f;
+    [Header("Rhythm")]
+    [SerializeField] private RythmManager rythmManager;
 
     [Header("SFX")]
     public AudioSource Audio;
@@ -16,101 +15,116 @@ public class NoteGenerator : MonoBehaviour
     public Transform SpawnPoint;
     public Transform JudgementPoint;
 
-    private const int BeatsPerMeasure = 4;
     private const int MeasuresPerWave = 4;
 
     private readonly List<NoteTiming> currentNoteTimings = new List<NoteTiming>();
 
     private MeasureData[] currentWave;
-    private int currentMeasureIndex;
+    private int waveStartMeasureIndex;
+    private int currentWaveMeasureIndex;
     private int nextNoteIndex;
-    private float phaseElapsedTime;
-    private float measureLength;
-    private float secondsPerBeat;
     private WavePhase phase;
     private bool isWavePlaying;
+    private bool isSubscribed;
+
+    private void OnEnable()
+    {
+        FindRythmManager();
+
+        SubscribeToRythmManager();
+    }
+
+    private void OnDisable()
+    {
+        if (rythmManager != null && isSubscribed)
+        {
+            rythmManager.OnMeasureStart -= HandleMeasureStart;
+            isSubscribed = false;
+        }
+    }
+
+    private void Update()
+    {
+        if (!isWavePlaying || phase != WavePhase.Guide)
+        {
+            return;
+        }
+        GenerateDueNotes((float)rythmManager.CurrentMeasureElapsedTime);
+    }
 
     public void WaveStart(MeasureData[] input)
     {
+        FindRythmManager();
+        SubscribeToRythmManager();
+
+        if (rythmManager == null)
+        {
+            Debug.LogError("RythmManager is required to start a wave.");
+            return;
+        }
+
+        if (!rythmManager.IsRunning || rythmManager.CurrentMeasureIndex < 0)
+        {
+            Debug.LogError("Start the RythmManager clock before starting a wave.");
+            return;
+        }
+
         if (input == null || input.Length != MeasuresPerWave)
         {
             Debug.LogError($"WaveStart requires exactly {MeasuresPerWave} MeasureData objects.");
             return;
         }
 
-        if (BPM <= 0f)
-        {
-            Debug.LogError("BPM must be greater than 0.");
-            return;
-        }
-
         currentWave = (MeasureData[])input.Clone();
-        secondsPerBeat = 60f / BPM;
-        measureLength = secondsPerBeat * BeatsPerMeasure;
-        currentMeasureIndex = 0;
-        phaseElapsedTime = -StartDelay;
+        waveStartMeasureIndex = rythmManager.CurrentMeasureIndex;
+        currentWaveMeasureIndex = 0;
         phase = WavePhase.Guide;
         isWavePlaying = true;
 
         BuildCurrentMeasureTimings();
-        Debug.Log($"Wave Start: BPM {BPM}, Measure Length {measureLength:F3}s");
+        GenerateDueNotes((float)rythmManager.CurrentMeasureElapsedTime);
+
+        Debug.Log($"Wave Start: rhythm measure {waveStartMeasureIndex + 1}");
     }
 
-    private void Update()
+    private void HandleMeasureStart(int rhythmMeasureIndex)
     {
         if (!isWavePlaying)
         {
             return;
         }
+        int waveMeasureOffset = rhythmMeasureIndex - waveStartMeasureIndex;
 
-        phaseElapsedTime += Time.deltaTime;
-        while (isWavePlaying)
-        {
-            if (phase == WavePhase.Guide)
-            {
-                GenerateDueNotes();
-
-                if (phaseElapsedTime < measureLength)
-                {
-                    break;
-                }
-
-                phaseElapsedTime -= measureLength;
-                phase = WavePhase.Judgement;
-                Debug.Log($"Judgement Start: measure {currentMeasureIndex + 1}");
-                continue;
-            }
-
-            if (phaseElapsedTime < measureLength)
-            {
-                break;
-            }
-
-            phaseElapsedTime -= measureLength;
-            currentMeasureIndex++;
-
-            if (currentMeasureIndex >= currentWave.Length)
-            {
-                isWavePlaying = false;
-                Debug.Log("Wave Complete");
-                break;
-            }
-
-            phase = WavePhase.Guide;
-            BuildCurrentMeasureTimings();
-            Debug.Log($"Guide Start: measure {currentMeasureIndex + 1}");
-        }
-    }
-
-    private void GenerateDueNotes()
-    {
-        if (phaseElapsedTime < 0f)
+        if (waveMeasureOffset <= 0)
         {
             return;
         }
 
+        if (waveMeasureOffset >= MeasuresPerWave * 2)
+        {
+            isWavePlaying = false;
+            Debug.Log("Wave Complete");
+            return;
+        }
+
+        if (waveMeasureOffset % 2 == 0)
+        {
+            currentWaveMeasureIndex = waveMeasureOffset / 2;
+            phase = WavePhase.Guide;
+            BuildCurrentMeasureTimings();
+            GenerateDueNotes(0f);
+            Debug.Log($"Guide Start: measure {currentWaveMeasureIndex + 1}");
+            return;
+        }
+
+        phase = WavePhase.Judgement;
+        Debug.Log($"Judgement Start: measure {currentWaveMeasureIndex + 1}");
+    }
+
+    private void GenerateDueNotes(float measureElapsedTime)
+    {
         while (nextNoteIndex < currentNoteTimings.Count &&
-               currentNoteTimings[nextNoteIndex].time <= phaseElapsedTime)
+               currentNoteTimings[nextNoteIndex].time <= measureElapsedTime)
         {
             GenerateNote(currentNoteTimings[nextNoteIndex]);
             nextNoteIndex++;
@@ -129,12 +143,8 @@ public class NoteGenerator : MonoBehaviour
                 mover = note.AddComponent<TimedNoteMover>();
             }
 
-            float judgementTime = noteTiming.time + measureLength;
-            mover.Initialize(
-                SpawnPoint.position,
-                JudgementPoint.position,
-                phaseElapsedTime,
-                judgementTime);
+            double judgementDspTime = rythmManager.GetNextMeasureDspTime(noteTiming.beatPosition);
+            mover.Initialize(SpawnPoint.position, JudgementPoint.position, judgementDspTime);
         }
 
         if (Audio != null && SFX != null)
@@ -143,7 +153,7 @@ public class NoteGenerator : MonoBehaviour
         }
 
         Debug.Log(
-            $"Note: measure {currentMeasureIndex + 1}, " +
+            $"Note: measure {currentWaveMeasureIndex + 1}, " +
             $"beat {noteTiming.beatIndex + 1}, tick {noteTiming.tick}");
     }
 
@@ -152,14 +162,14 @@ public class NoteGenerator : MonoBehaviour
         currentNoteTimings.Clear();
         nextNoteIndex = 0;
 
-        MeasureData measure = currentWave[currentMeasureIndex];
+        MeasureData measure = currentWave[currentWaveMeasureIndex];
 
         if (measure == null || measure.beats == null)
         {
             return;
         }
 
-        int beatCount = Mathf.Min(BeatsPerMeasure, measure.beats.Length);
+        int beatCount = Mathf.Min(RythmManager.BeatsPerMeasure, measure.beats.Length);
 
         for (int beatIndex = 0; beatIndex < beatCount; beatIndex++)
         {
@@ -173,27 +183,33 @@ public class NoteGenerator : MonoBehaviour
             for (int noteIndex = 0; noteIndex < beat.noteTicks.Length; noteIndex++)
             {
                 int tick = beat.noteTicks[noteIndex];
-                float tickOffset = (float)tick / beat.subdivisions * secondsPerBeat;
-                float noteTime = beatIndex * secondsPerBeat + tickOffset;
+                float beatPosition = beatIndex + (float)tick / beat.subdivisions;
+                float noteTime = beatPosition * rythmManager.SecondsPerBeat;
 
-                currentNoteTimings.Add(new NoteTiming(beatIndex, tick, noteTime));
+                currentNoteTimings.Add(
+                    new NoteTiming(beatIndex, tick, beatPosition, noteTime));
             }
         }
 
         currentNoteTimings.Sort((a, b) => a.time.CompareTo(b.time));
     }
 
-    private void OnValidate()
+    private void FindRythmManager()
     {
-        if (BPM <= 0f)
+        if (rythmManager == null)
         {
-            BPM = 120f;
+            rythmManager = FindAnyObjectByType<RythmManager>();
         }
+    }
 
-        if (StartDelay < 0f)
+    private void SubscribeToRythmManager()
+    {
+        if (rythmManager == null || isSubscribed)
         {
-            StartDelay = 0f;
+            return;
         }
+        rythmManager.OnMeasureStart += HandleMeasureStart;
+        isSubscribed = true;
     }
 
     private enum WavePhase
@@ -203,16 +219,18 @@ public class NoteGenerator : MonoBehaviour
     }
 }
 
-public struct NoteTiming
+public readonly struct NoteTiming
 {
-    public int beatIndex;
-    public int tick;
-    public float time;
+    public readonly int beatIndex;
+    public readonly int tick;
+    public readonly float beatPosition;
+    public readonly float time;
 
-    public NoteTiming(int beatIndex, int tick, float time)
+    public NoteTiming(int beatIndex, int tick, float beatPosition, float time)
     {
         this.beatIndex = beatIndex;
         this.tick = tick;
+        this.beatPosition = beatPosition;
         this.time = time;
     }
 }
