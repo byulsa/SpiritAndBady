@@ -3,8 +3,7 @@ using UnityEngine;
 public class BackgroundLoop : MonoBehaviour
 {
     [Header("배경 설정")]
-    public float minSpeed = 1f;
-    public float maxSpeed = 10f;
+    public float maxSpeed = 100f;
 
     [Header("테스트 설정")]
     public bool isTestMode = true;
@@ -12,7 +11,7 @@ public class BackgroundLoop : MonoBehaviour
     public KeyCode speedDownKey = KeyCode.LeftArrow;
 
     public float currentSpeed = 0f;
-    private float testNormalizedScore = 0f;
+    private float testSpeed = 0f;
     private Transform[] backgrounds;
     private float bgWidth;
 
@@ -44,18 +43,16 @@ public class BackgroundLoop : MonoBehaviour
     void HandleTestInput()
     {
         if (Input.GetKey(speedUpKey))
-            testNormalizedScore = Mathf.Clamp01(testNormalizedScore + Time.deltaTime * 0.5f);
+            testSpeed = Mathf.Clamp(testSpeed + Time.deltaTime * 10f, 0f, maxSpeed);
         if (Input.GetKey(speedDownKey))
-            testNormalizedScore = Mathf.Clamp01(testNormalizedScore - Time.deltaTime * 0.5f);
+            testSpeed = Mathf.Clamp(testSpeed - Time.deltaTime * 10f, 0f, maxSpeed);
 
-        SetSpeed(testNormalizedScore);
+        SetSpeed(testSpeed);
     }
 
-    // 판정 담당이 호출
-    public void SetSpeed(float normalizedScore)
+    public void SetSpeed(float speed)
     {
-        float target = Mathf.Lerp(minSpeed, maxSpeed, normalizedScore);
-        currentSpeed = Mathf.Lerp(currentSpeed, target, Time.deltaTime * 3f);
+        currentSpeed = Mathf.Lerp(currentSpeed, speed, Time.deltaTime * 3f);
     }
 
     float GetRightmostX()

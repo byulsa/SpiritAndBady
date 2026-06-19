@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class NoteGenerator : MonoBehaviour
 {
@@ -27,6 +28,8 @@ public class NoteGenerator : MonoBehaviour
     private WavePhase phase;
     private bool isWavePlaying;
     private bool isSubscribed;
+
+    public event Action OnWaveFinished;
 
     private void OnEnable()
     {
@@ -105,6 +108,7 @@ public class NoteGenerator : MonoBehaviour
         {
             isWavePlaying = false;
             Debug.Log("Wave Complete");
+            OnWaveFinished?.Invoke();
             return;
         }
 

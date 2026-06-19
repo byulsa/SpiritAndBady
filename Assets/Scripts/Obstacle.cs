@@ -3,14 +3,16 @@ using UnityEngine;
 public class Obstacle : MonoBehaviour
 {
     [Header("장애물 설정")]
-    public float requiredSpeed ; // 장애물마다 Inspector에서 직접 설정
+    public float requiredSpeed = 50f;
 
     private BackgroundLoop backgroundLoop;
+    private TrainSpeedController speedController;
     private ObstacleSpawner spawner;
 
     void Start()
     {
         backgroundLoop = Object.FindFirstObjectByType<BackgroundLoop>();
+        speedController = Object.FindFirstObjectByType<TrainSpeedController>();
     }
 
     public void Init(ObstacleSpawner obstacleSpawner)
@@ -31,16 +33,10 @@ public class Obstacle : MonoBehaviour
     {
         if (other.CompareTag("Train"))
         {
-            if (backgroundLoop.currentSpeed >= requiredSpeed)
-            {
+            if (speedController.GetCurrentSpeed() >= requiredSpeed)
                 spawner.OnObstaclePassed();
-                // 통과 연출 추가 가능
-            }
             else
-            {
                 spawner.OnObstacleFailed();
-                // healthManager.TakeDamage(); 추후 연동
-            }
         }
     }
 }

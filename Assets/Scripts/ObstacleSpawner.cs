@@ -12,6 +12,19 @@ public class ObstacleSpawner : MonoBehaviour
     public KeyCode testSpawnKey = KeyCode.Space;
 
     [SerializeField] private RythmManager rythmManager;
+    [SerializeField] private NoteGenerator noteGenerator;
+
+    private void Start()
+    {
+        if (noteGenerator != null)
+            noteGenerator.OnWaveFinished += OnRhythmSectionComplete;
+    }
+
+    private void OnDestroy()
+    {
+        if (noteGenerator != null)
+            noteGenerator.OnWaveFinished -= OnRhythmSectionComplete;
+    }
 
     void Update()
     {
@@ -19,7 +32,6 @@ public class ObstacleSpawner : MonoBehaviour
             StartCoroutine(SpawnAfterDelay(GetBarDuration()));
     }
 
-    // 1번 담당이 구간 끝나면 호출
     public void OnRhythmSectionComplete()
     {
         StartCoroutine(SpawnAfterDelay(GetBarDuration()));
@@ -33,13 +45,12 @@ public class ObstacleSpawner : MonoBehaviour
 
     float GetBarDuration()
     {
-        if (rythmManager == null) return 2f; // 연동 안됐을 때 기본값
+        if (rythmManager == null) return 2f;
         return rythmManager.SecondsPerMeasure;
     }
 
     public void OnObstaclePassed()
     {
-        // BPM 증가 - 다음 마디부터 적용
         if (rythmManager != null)
             rythmManager.ChangeBpmOnNextMeasure(rythmManager.BPM + 10f);
     }
