@@ -445,6 +445,7 @@ GameObject:
   - component: {fileID: 1443290739}
   - component: {fileID: 1443290738}
   - component: {fileID: 1443290736}
+  - component: {fileID: 1443290742}
   - component: {fileID: 1443290737}
   m_Layer: 0
   m_Name: Line
@@ -577,6 +578,23 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1443290742
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1443290735}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 697cbd9277a28b74cadf1cc973c5254a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PatternInput
+  measure1: {fileID: 11400000, guid: a8c34013c5c994f62ab217de940f8b2b, type: 2}
+  measure2: {fileID: 11400000, guid: 716cd542223d6498eaa41aff202ddaec, type: 2}
+  measure3: {fileID: 11400000, guid: 9b60fc33bb3ff42a4923c1d03dd31d1d, type: 2}
+  measure4: {fileID: 11400000, guid: e2659f393084145e1a382356776d8ad7, type: 2}
+  noteGeneratortest: {fileID: 2091660993}
 --- !u!1001 &1469755032
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -650,7 +668,6 @@ GameObject:
   - component: {fileID: 1535769378}
   - component: {fileID: 1535769377}
   - component: {fileID: 1535769376}
-  - component: {fileID: 1535769375}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -658,21 +675,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1535769375
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1535769374}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 52a1c71811e1e6948b871a9fa2ab4d09, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SpawnNote
-  SpawnTime: 0.5
-  prefabObject: {fileID: 8800350183521160369, guid: 12f1baf78e5a20943aa87d87cf7212a0, type: 3}
-  judgement: {fileID: 1443290737}
 --- !u!65 &1535769376
 BoxCollider:
   m_ObjectHideFlags: 0

@@ -7,12 +7,12 @@ public class NoteGeneratorTest : MonoBehaviour
     [SerializeField] private MeasureData[] testWave = new MeasureData[4];
     [SerializeField] private bool startAutomatically = true;
     [SerializeField] private KeyCode replayKey = KeyCode.Space;
-
+    public System.Action OnWaveFinished;
     private void Start()
     {
         if (startAutomatically)
         {
-            QueueTestWave();
+            //QueueTestWave();
         }
     }
 
@@ -46,5 +46,30 @@ public class NoteGeneratorTest : MonoBehaviour
 
         rythmManager.RunOnNextMeasure(() => noteGenerator.WaveStart(testWave));
         Debug.Log("Test wave queued for the next measure.");
+    }
+    public void QueueTestWave(MeasureData[] wave)
+    {
+        if (rythmManager == null || noteGenerator == null)
+        {
+            Debug.LogError("Assign RythmManager and NoteGenerator to NoteGeneratorTest.");
+            return;
+        }
+
+        if (wave == null || wave.Length != 4)
+        {
+            Debug.LogError("Wave must contain exactly four MeasureData objects.");
+            return;
+        }
+
+        if (!rythmManager.IsRunning)
+        {
+            rythmManager.StartClock();
+        }
+
+        MeasureData[] copiedWave = (MeasureData[])wave.Clone();
+
+        rythmManager.RunOnNextMeasure(() => noteGenerator.WaveStart(copiedWave));
+
+        Debug.Log("Wave queued for the next measure.");
     }
 }

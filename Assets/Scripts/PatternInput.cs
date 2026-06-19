@@ -9,14 +9,15 @@ public class PatternInput : MonoBehaviour
     public MeasureData measure4;
 
     [Header("Generator")]
-    public NoteGenerator noteGenerator;
+    //public NoteGenerator noteGenerator;
+    public NoteGeneratorTest noteGeneratortest;
 
     private MeasureData[] selectedMeasures = new MeasureData[4];
     private int currentIndex = 0;
     private bool isSelecting = true;
     private void Start()
     {
-        // noteGenerator.OnWaveFinished += ResetSelection;
+        noteGeneratortest.OnWaveFinished += ResetSelection;
     }
 
     void Update()
@@ -57,7 +58,7 @@ public class PatternInput : MonoBehaviour
         {
             isSelecting = false;
 
-            noteGenerator.WaveStart(selectedMeasures);
+            noteGeneratortest.QueueTestWave(selectedMeasures);
         }
     }
 

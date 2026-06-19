@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: MeasureData 3
   m_EditorClassIdentifier: Assembly-CSharp::MeasureData
   beats:
-  - subdivisions: 2
-    noteTicks: 01000000
+  - subdivisions: 4
+    noteTicks: 000000000200000004000000
   - subdivisions: 2
     noteTicks: 01000000
   - subdivisions: 2
