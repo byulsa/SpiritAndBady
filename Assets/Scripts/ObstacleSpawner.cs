@@ -3,11 +3,11 @@ using System.Collections;
 
 public class ObstacleSpawner : MonoBehaviour
 {
-    [Header("Àå¾Ö¹° ¼³Á¤")]
+    [Header("ï¿½ï¿½Ö¹ï¿½ ï¿½ï¿½ï¿½ï¿½")]
     public GameObject[] obstaclePrefabs;
     public Transform spawnPoint;
 
-    [Header("Å×½ºÆ® ¼³Á¤")]
+    [Header("ï¿½×½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½")]
     public bool isTestMode = true;
     public KeyCode testSpawnKey = KeyCode.Space;
 
@@ -57,7 +57,7 @@ public class ObstacleSpawner : MonoBehaviour
 
     public void OnObstacleFailed()
     {
-        // healthManager.TakeDamage(); ÃßÈÄ ¿¬µ¿
+        // healthManager.TakeDamage(); ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     }
 
     void SpawnObstacle()

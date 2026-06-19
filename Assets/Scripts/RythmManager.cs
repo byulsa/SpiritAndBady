@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+[DefaultExecutionOrder(-100)]
 public class RythmManager : MonoBehaviour
 {
     [Header("Rhythm")]
@@ -14,6 +15,7 @@ public class RythmManager : MonoBehaviour
     public event Action<int> OnMeasureStart;
 
     public float BPM => currentBpm;
+    public float NextMeasureBPM => pendingBpm ?? currentBpm;
     public float SecondsPerBeat => 60f / currentBpm;
     public float SecondsPerMeasure => SecondsPerBeat * BeatsPerMeasure;
     public int CurrentBeatIndex { get; private set; } = -1;
