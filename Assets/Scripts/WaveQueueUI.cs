@@ -9,13 +9,13 @@ public class WaveQueueUI : MonoBehaviour
     {
         PlayerInput.OnSelectionTimedOut += Clear;
         PlayerInput.OnMeasureSelected += OnMeasureSelected;
-        NoteGenerator.OnWaveMeasureStarted += OnWaveMeasureStarted;
+        NoteGenerator.OnMeasureStarted += OnWaveMeasureStarted;
     }
     private void OnDisable()
     {
         PlayerInput.OnSelectionTimedOut -= Clear;
         PlayerInput.OnMeasureSelected -= OnMeasureSelected;
-        NoteGenerator.OnWaveMeasureStarted -= OnWaveMeasureStarted;
+        NoteGenerator.OnMeasureStarted -= OnWaveMeasureStarted;
     }
     private void OnMeasureSelected(int SlotIndex, int Difficulty)
     {
@@ -26,7 +26,7 @@ public class WaveQueueUI : MonoBehaviour
         }
         Slots[SlotIndex].SetSlot(Difficulty);
     }
-    private void OnWaveMeasureStarted(int index, MeasureData _)
+    private void OnWaveMeasureStarted(int index)
     {
         for (int i = 0; i < Slots.Length - 1 - index; i++)
         {

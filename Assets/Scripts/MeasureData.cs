@@ -3,7 +3,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "MeasureData", menuName = "Rhythm/Measure Data")]
 public class MeasureData : ScriptableObject
 {
-    public enum EDifficulty { Easy, Noraml, Hard}
+    public enum EDifficulty { Easy, Noraml, Hard }
     public EDifficulty difficulty;
     public BeatData[] beats = new BeatData[4];
     private const int BeatsPerMeasure = 4;
@@ -25,6 +25,15 @@ public class MeasureData : ScriptableObject
                 beats[i].subdivisions = 1;
             }
         }
+    }
+    public int GetNotes()
+    {
+        int result = 0;
+        foreach (BeatData beat in beats)
+        {
+            result += beat.noteTicks.Length;
+        }
+        return result;
     }
 }
 [System.Serializable]
