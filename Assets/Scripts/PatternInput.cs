@@ -12,7 +12,11 @@ public class PatternInput : MonoBehaviour
 
     [Header("UI")]
     [SerializeField] private GameObject InputGuidePanel;
-    [SerializeField] private GameObject ExpectedSpeed;
+
+    [Header("Input Sound")]
+    [SerializeField] private AudioSource inputAudioSource;
+    [SerializeField] private AudioClip inputAddedSound;
+    [SerializeField, Range(0f, 1f)] private float inputSoundVolume = 1f;
 
     [Header("Selection")]
     [SerializeField] private int selectionMeasureCount = 2;
@@ -27,6 +31,14 @@ public class PatternInput : MonoBehaviour
 
     private bool isSubscribed;
 
+    private void Awake()
+    {
+        if (inputAudioSource == null)
+        {
+            inputAudioSource = GetComponent<AudioSource>();
+        }
+    }
+
     private void OnEnable()
     {
         FindDependencies();
@@ -37,10 +49,6 @@ public class PatternInput : MonoBehaviour
         if (InputGuidePanel)
         {
             InputGuidePanel.SetActive(bActive);
-        }
-        if (ExpectedSpeed)
-        {
-            ExpectedSpeed.SetActive(bActive);
         }
     }
 
@@ -125,6 +133,7 @@ public class PatternInput : MonoBehaviour
             return;
         }
 
+        PlayInputAddedSound();
         OnMeasureSelected?.Invoke(Counter++, difficulty);
         if (!measureGenerator.IsWaveReady)
         {
@@ -137,6 +146,14 @@ public class PatternInput : MonoBehaviour
         Debug.Log("Pattern selection complete. Wave queued for the next measure.");
 
         Active(false);
+    }
+
+    private void PlayInputAddedSound()
+    {
+        if (inputAudioSource != null && inputAddedSound != null)
+        {
+            inputAudioSource.PlayOneShot(inputAddedSound, inputSoundVolume);
+        }
     }
 
     private void HandleMeasureStart(int measureIndex)
