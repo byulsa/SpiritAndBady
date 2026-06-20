@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class TutorialManager : MonoBehaviour
@@ -6,6 +7,8 @@ public class TutorialManager : MonoBehaviour
 
     [SerializeField] private RythmManager RythmManager;
 
+    [SerializeField] private GameObject[] TutorialPanels;
+    private int Index = 0;
     [SerializeField] private AudioSource Audio;
     [SerializeField] private AudioClip Clip;
     public void OnButtonCliked()
@@ -25,13 +28,6 @@ public class TutorialManager : MonoBehaviour
             RythmManager = FindAnyObjectByType<RythmManager>();
         }
     }
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            
-        }
-    }
     void Start()
     {
         SetCursorInput(true);
@@ -41,16 +37,41 @@ public class TutorialManager : MonoBehaviour
         Cursor.visible = isEnabled;
         Cursor.lockState = isEnabled ? CursorLockMode.None : CursorLockMode.Locked;
     }
-
-    public void ShowTutorial(bool bShow)
+    private void TutorialEnd()
     {
+        OnTutorialEnd?.Invoke();
+        if (RythmManager)
+        {
+            RythmManager.TurnOffMetronome();
+        }
+        SetCursorInput(false);
+        Destroy(gameObject);
+        return;
+    }
+    public void Show(bool bShow)
+    {
+        OnButtonCliked();
         if (!bShow)
         {
-            OnTutorialEnd?.Invoke();
-            Destroy(gameObject);
+            TutorialEnd();
             return;
         }
         TutorialFirstTimePanel.SetActive(false);
+        ShowTutorial();
+    }
 
+    public void ShowTutorial()
+    {
+        if (Index != 0)
+        {
+            TutorialPanels[Index - 1].SetActive(false);
+        }
+        if (Index >= TutorialPanels.Length)
+        {
+            TutorialEnd();
+            return;
+        }
+        TutorialPanels[Index++].SetActive(true);
+        RythmManager.RunOnNextMeasure(ShowTutorial);
     }
 }
