@@ -11,14 +11,25 @@ public class ObstacleSpawner : MonoBehaviour
     public bool isTestMode = true;
     public KeyCode testSpawnKey = KeyCode.Space;
 
+    [Header("요구 속도 설정")]
+    public float initialRequiredSpeed = 60f;  // 시작 요구 속도
+    public float successIncrease = 10f;       // 통과 시 증가량
+    public float failDecrease = 10f;          // 실패 시 감소량
+    public float minRequiredSpeed = 60f;      // 최저 요구 속도
+    public float maxRequiredSpeed = 170f;     // 최고 요구 속도
+
+    private float currentRequiredSpeed;
+
     [SerializeField] private RythmManager rythmManager;
     [SerializeField] private NoteGenerator noteGenerator;
     [SerializeField] private PatternInput Input;
     [SerializeField] private BackgroundLoop backgroundLoop;
     [SerializeField] private Transform trainTransform;
+    [SerializeField] private HealthManager healthManager;
 
     private void Start()
     {
+        currentRequiredSpeed = initialRequiredSpeed;
         if (noteGenerator != null)
             noteGenerator.OnWaveFinished += OnRhythmSectionComplete;
         if (Input != null)
@@ -47,32 +58,29 @@ public class ObstacleSpawner : MonoBehaviour
                 rythmManager.RunOnNextMeasure(SpawnObstacle);
         }
     }
-    // public void OnRhythmSectionComplete()
-    // {
-    //     StartCoroutine(SpawnAfterDelay(GetBarDuration()));
-    // }
-
-    IEnumerator SpawnAfterDelay(float delay)
-    {
-        yield return new WaitForSeconds(delay);
-        SpawnObstacle();
-    }
-
-    float GetBarDuration()
-    {
-        if (rythmManager == null) return 2f;
-        return rythmManager.SecondsPerMeasure;
-    }
 
     public void OnObstaclePassed()
     {
+        currentRequiredSpeed = Mathf.Min(currentRequiredSpeed + successIncrease, maxRequiredSpeed);
         if (rythmManager != null)
             rythmManager.ChangeBpmOnNextMeasure(rythmManager.BPM + 10f);
+
+        rythmManager.RunOnNextMeasure(() => {
+            if (Input != null)
+                Input.BeginSelection();
+        });
     }
 
     public void OnObstacleFailed()
     {
-        // healthManager.TakeDamage(); ���� ����
+        currentRequiredSpeed = Mathf.Max(currentRequiredSpeed - failDecrease, minRequiredSpeed);
+        if (healthManager != null)
+            healthManager.TakeDamage();
+
+        rythmManager.RunOnNextMeasure(() => {
+            if (Input != null)
+                Input.BeginSelection();
+        });
     }
 
     void SpawnObstacle()
@@ -92,6 +100,9 @@ public class ObstacleSpawner : MonoBehaviour
 
         Obstacle obstacle = obj.GetComponent<Obstacle>();
         if (obstacle != null)
+        {
+            obstacle.requiredSpeed = currentRequiredSpeed;
             obstacle.Init(this, arrivalDspTime);
+        }
     }
 }
