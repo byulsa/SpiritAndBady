@@ -23,7 +23,7 @@ public class ObstacleSpawner : MonoBehaviour
 
     public float obstacleYOffset = 0.2f;
 
-    private float currentRequiredSpeed;
+    public float currentRequiredSpeed;
 
     [SerializeField] private RythmManager rythmManager;
     [SerializeField] private NoteGenerator noteGenerator;
