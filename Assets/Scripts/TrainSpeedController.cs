@@ -54,6 +54,7 @@ public class TrainSpeedController : MonoBehaviour
         currentSpeed = initialSpeed;
         OnSpeedChanged?.Invoke(currentSpeed);
         OnExpectedSpeedGainChanged?.Invoke(TotalExpectedSpeedGain);
+        Debug.Log($"backgroundLoop null: {backgroundLoop == null}");
         if (backgroundLoop != null)
             backgroundLoop.SetSpeed(currentSpeed);
     }
@@ -119,5 +120,14 @@ public class TrainSpeedController : MonoBehaviour
         currentSpeed = initialSpeed;
         maxSpeed = 0f;
         backgroundLoop.SetSpeed(currentSpeed);
+    }
+
+    public void OnObstacleResult(bool passed)
+    {
+        currentSpeed = initialSpeed;
+        OnSpeedChanged?.Invoke(currentSpeed);
+        if (backgroundLoop != null)
+            backgroundLoop.SetSpeed(currentSpeed);
+        Debug.Log($"장애물 결과: {(passed ? "통과" : "실패")} / 속도 초기화: {currentSpeed}");
     }
 }

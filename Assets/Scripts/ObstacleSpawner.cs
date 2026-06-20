@@ -26,6 +26,7 @@ public class ObstacleSpawner : MonoBehaviour
     [SerializeField] private BackgroundLoop backgroundLoop;
     [SerializeField] private Transform trainTransform;
     [SerializeField] private HealthManager healthManager;
+    [SerializeField] private TrainSpeedController trainSpeedController;
 
     private void Start()
     {
@@ -61,6 +62,7 @@ public class ObstacleSpawner : MonoBehaviour
 
     public void OnObstaclePassed()
     {
+        trainSpeedController?.OnObstacleResult(true);
         currentRequiredSpeed = Mathf.Min(currentRequiredSpeed + successIncrease, maxRequiredSpeed);
         if (rythmManager != null)
             rythmManager.ChangeBpmOnNextMeasure(rythmManager.BPM + 10f);
@@ -73,6 +75,7 @@ public class ObstacleSpawner : MonoBehaviour
 
     public void OnObstacleFailed()
     {
+        trainSpeedController?.OnObstacleResult(false);
         currentRequiredSpeed = Mathf.Max(currentRequiredSpeed - failDecrease, minRequiredSpeed);
         if (healthManager != null)
             healthManager.TakeDamage();
