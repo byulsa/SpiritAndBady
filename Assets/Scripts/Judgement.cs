@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System;
+using TMPro;
+using JetBrains.Annotations;
 
 public enum JudgeType
 {
@@ -24,6 +26,9 @@ public class Judgement : MonoBehaviour
     public JudgeType judgeType = JudgeType.Perfect;
 
     private readonly List<Transform> notes = new();
+    [Header("Judgement Text")]
+    public TextMeshProUGUI judgeText;
+    private Animator judgeTextAnim;
 
     [Header("Judgement Sound")]
     public AudioSource audioSource;
@@ -38,6 +43,10 @@ public class Judgement : MonoBehaviour
         {
             audioSource = GetComponent<AudioSource>();
         }
+    }
+    void Start()
+    {
+        judgeTextAnim = judgeText.GetComponent<Animator>();
     }
 
     private void Update()
@@ -121,13 +130,15 @@ public class Judgement : MonoBehaviour
         OnJudged?.Invoke(result);
         PlayJudgementSound(result);
 
+
         if (note == null)
         {
             return;
         }
 
         notes.RemoveAt(0);
-
+        judgeText.text = result.ToString();
+        judgeTextAnim.Play("OnPlay");
         Destroy(note.gameObject);
         Debug.Log($"Judgement : {result}");
     }
