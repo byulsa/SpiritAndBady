@@ -1,20 +1,19 @@
 using System;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+
 
 public class HealthManager : MonoBehaviour
 {
-    [Header("HP ¼³Á¤")]
+    [Header("HP ï¿½ï¿½ï¿½ï¿½")]
     public int maxHP = 5;
     private int currentHP;
 
-    [Header("ÀÌÆåÆ®")]
+    [Header("ï¿½ï¿½ï¿½ï¿½Æ®")]
     public GameObject damageEffect;
     public AudioClip damageSound;
     public GameObject gameOverEffect;
 
     [SerializeField] private TrainSpeedController trainSpeedController;
-    [SerializeField] private BackgroundLoop backgroundLoop;
 
     private AudioSource audioSource;
 
@@ -27,19 +26,6 @@ public class HealthManager : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
         OnHPChanged?.Invoke(currentHP);
     }
-
-    private void Update()
-    {
-        if (Time.timeScale == 0f && Input.GetKeyDown(KeyCode.R))
-            Restart();
-    }
-
-    public void Restart()
-    {
-        Time.timeScale = 1f;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-    }
-
     public void TakeDamage()
     {
         currentHP = Mathf.Max(0, currentHP - 1);
@@ -57,27 +43,13 @@ public class HealthManager : MonoBehaviour
 
     private void GameOver()
     {
-        Debug.Log("°ÔÀÓ ¿À¹ö");
-
         if (gameOverEffect != null)
             Instantiate(gameOverEffect, transform.position, Quaternion.identity);
 
         if (trainSpeedController != null)
             trainSpeedController.SetSpeedZero();
-
-        // ¼Óµµ 0 µÉ ¶§ ¸ØÃßµµ·Ï ±¸µ¶
-        if (backgroundLoop != null)
-            backgroundLoop.OnSpeedReachedZero += OnSpeedReachedZero;
-
         OnDead?.Invoke();
     }
-
-    private void OnSpeedReachedZero()
-    {
-        Time.timeScale = 0f;
-        Debug.Log("¼Óµµ 0 - °ÔÀÓ Á¤Áö");
-    }
-
     public int GetCurrentHP() => currentHP;
     public int GetMaxHP() => maxHP;
 }

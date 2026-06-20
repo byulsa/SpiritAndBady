@@ -1,6 +1,8 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
+[RequireComponent(typeof(Graphic))]
 public class MatControll : MonoBehaviour
 {
     [SerializeField] private Material irisMaterial;
@@ -13,10 +15,29 @@ public class MatControll : MonoBehaviour
     [SerializeField] private float recoverTime = 0.3f;   // 천천히 복귀
 
     private Coroutine damageCoroutine;
+    private Material irisMaterialInstance;
+    private Graphic irisGraphic;
+
+    private static readonly int Radius = Shader.PropertyToID("_Radius");
+
+    private void Awake()
+    {
+        irisGraphic = GetComponent<Graphic>();
+
+        if (irisMaterial == null)
+        {
+            Debug.LogError("Iris Material이 지정되지 않았습니다.", this);
+            enabled = false;
+            return;
+        }
+
+        irisMaterialInstance = Instantiate(irisMaterial);
+        irisGraphic.material = irisMaterialInstance;
+    }
 
     private void Start()
     {
-        irisMaterial.SetFloat("_Radius", normalRadius);
+        irisMaterialInstance.SetFloat(Radius, normalRadius);
     }
 
     public void DamageEffect()
@@ -38,15 +59,15 @@ public class MatControll : MonoBehaviour
         {
             float t = timer / shrinkTime;
 
-            irisMaterial.SetFloat(
-                "_Radius",
+            irisMaterialInstance.SetFloat(
+                Radius,
                 Mathf.Lerp(normalRadius, hitRadius, t));
 
             timer += Time.deltaTime;
             yield return null;
         }
 
-        irisMaterial.SetFloat("_Radius", hitRadius);
+        irisMaterialInstance.SetFloat(Radius, hitRadius);
 
         // 0 -> 1 (천천히)
         timer = 0f;
@@ -55,16 +76,24 @@ public class MatControll : MonoBehaviour
         {
             float t = timer / recoverTime;
 
-            irisMaterial.SetFloat(
-                "_Radius",
+            irisMaterialInstance.SetFloat(
+                Radius,
                 Mathf.Lerp(hitRadius, normalRadius, t));
 
             timer += Time.deltaTime;
             yield return null;
         }
 
-        irisMaterial.SetFloat("_Radius", normalRadius);
+        irisMaterialInstance.SetFloat(Radius, normalRadius);
 
         damageCoroutine = null;
+    }
+
+    private void OnDestroy()
+    {
+        if (irisMaterialInstance != null)
+        {
+            Destroy(irisMaterialInstance);
+        }
     }
 }
