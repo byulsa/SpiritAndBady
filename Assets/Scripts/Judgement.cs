@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System;
 using TMPro;
 using JetBrains.Annotations;
+using UnityEngine.Timeline;
 
 public enum JudgeType
 {
@@ -13,6 +14,7 @@ public enum JudgeType
 
 public class Judgement : MonoBehaviour
 {
+    public CameraMoving cameraMoving;
     public event Action<JudgeType> OnJudged;
 
     [Header("Judge Line")]
@@ -26,6 +28,8 @@ public class Judgement : MonoBehaviour
     public JudgeType judgeType = JudgeType.Perfect;
 
     private readonly List<Transform> notes = new();
+    [Header("Judgement Particle")]
+    public ParticleSystem ExFire;
     [Header("Judgement Text")]
     public TextMeshProUGUI judgeText;
     private Animator judgeTextAnim;
@@ -139,6 +143,11 @@ public class Judgement : MonoBehaviour
         notes.RemoveAt(0);
         judgeText.text = result.ToString();
         judgeTextAnim.Play("OnPlay");
+        if (result == JudgeType.Perfect)
+        {
+            cameraMoving.Zoom(13f, 0.25f);
+            ExFire.Play();
+        }
         Destroy(note.gameObject);
         Debug.Log($"Judgement : {result}");
     }
