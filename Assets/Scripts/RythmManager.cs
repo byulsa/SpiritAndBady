@@ -11,6 +11,14 @@ public class RythmManager : MonoBehaviour
     [SerializeField] private float startDelay;
     public const int BeatsPerMeasure = 4;
 
+    [Header("Test Metronome")]
+    [SerializeField] private bool playMetronome;
+    [SerializeField] private AudioSource metronomeAudioSource;
+    [SerializeField] private AudioClip metronomeClick;
+    [Tooltip("Optional click sound for the first beat of each measure.")]
+    [SerializeField] private AudioClip metronomeDownbeatClick;
+    [SerializeField, Range(0f, 1f)] private float metronomeVolume = 1f;
+
     public event Action<int> OnBeat;
     public event Action<int> OnMeasureStart;
 
@@ -157,8 +165,23 @@ public class RythmManager : MonoBehaviour
             OnMeasureStart?.Invoke(CurrentMeasureIndex);
         }
 
+        PlayMetronomeClick();
         OnBeat?.Invoke(CurrentBeatIndex);
         nextBeatDspTime = beatDspTime + SecondsPerBeat;
+    }
+
+    private void PlayMetronomeClick()
+    {
+        if (!playMetronome || metronomeAudioSource == null || metronomeClick == null)
+        {
+            return;
+        }
+
+        AudioClip click = CurrentBeatIndex == 0 && metronomeDownbeatClick != null
+            ? metronomeDownbeatClick
+            : metronomeClick;
+
+        metronomeAudioSource.PlayOneShot(click, metronomeVolume);
     }
 
     private void ApplyPendingBpm()

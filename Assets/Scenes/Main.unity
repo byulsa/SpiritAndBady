@@ -4329,6 +4329,11 @@ MonoBehaviour:
   bpm: 60
   playOnStart: 1
   startDelay: 1.5
+  playMetronome: 1
+  metronomeAudioSource: {fileID: 2091660995}
+  metronomeClick: {fileID: 8300000, guid: ea2f3ffcef8c547ea8365b58f88ee1a9, type: 3}
+  metronomeDownbeatClick: {fileID: 8300000, guid: 47df9059fd45540abb8a4bf17e344e83, type: 3}
+  metronomeVolume: 1
 --- !u!82 &2091660995
 AudioSource:
   m_ObjectHideFlags: 0

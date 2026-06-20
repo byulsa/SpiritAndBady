@@ -48,7 +48,7 @@ public class PatternInput : MonoBehaviour
 
         rythmManager.RunOnNextMeasure(BeginSelection);
     }
-
+    
     private void OnDisable()
     {
         if (rythmManager != null && isSubscribed)
