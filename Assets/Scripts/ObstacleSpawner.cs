@@ -37,6 +37,7 @@ public class ObstacleSpawner : MonoBehaviour
     [SerializeField] private AudioSource source;
     [SerializeField] private AudioClip successSound;
     [SerializeField] private AudioClip FailSound;
+    [SerializeField] private MatControll VignetteMat;
 
     private void Start()
     {
@@ -92,12 +93,15 @@ public class ObstacleSpawner : MonoBehaviour
         if (healthManager != null)
             healthManager.TakeDamage();
 
+        VignetteMat.DamageEffect();
+
         rythmManager.RunOnNextMeasure(() =>
         {
             if (Input != null)
                 Input.BeginSelection();
         });
         source.PlayOneShot(FailSound);
+
     }
 
     void SpawnObstacle()

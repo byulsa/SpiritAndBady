@@ -31,8 +31,8 @@ Material:
     m_Floats:
     - _AspectRatio: 1.7777778
     - _ColorMask: 15
-    - _Edge: 0.05
-    - _Radius: 1.2
+    - _Edge: 0.163
+    - _Radius: 1
     - _Stencil: 0
     - _StencilComp: 8
     - _StencilOp: 0
@@ -41,6 +41,6 @@ Material:
     - _UseUIAlphaClip: 0
     m_Colors:
     - _Center: {r: 0.5, g: 0.5, b: 0, a: 0}
-    - _Color: {r: 0, g: 0, b: 0, a: 1}
+    - _Color: {r: 1, g: 0.026158143, b: 0, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

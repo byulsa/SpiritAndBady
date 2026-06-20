@@ -32,6 +32,7 @@ public class Judgement : MonoBehaviour
 
     [Header("Judgement Particle")]
     public ParticleSystem ExFire;
+    public ParticleSystem HitSystem;
 
     [Header("Judgement Text")]
     public TextMeshProUGUI judgeText;
@@ -116,7 +117,7 @@ public class Judgement : MonoBehaviour
         judgeTextAnim.Play("OnPlay");
         StartCoroutine(HideOriginalText());
 
-        // º¹»çº» »ý¼ºÇØ¼­ FadeOut
+        // ï¿½ï¿½ï¿½çº» ï¿½ï¿½ï¿½ï¿½ï¿½Ø¼ï¿½ FadeOut
         GameObject copy = Instantiate(judgeText.gameObject, judgeText.transform.position, Quaternion.identity, judgeText.transform.parent);
         TextMeshProUGUI copyText = copy.GetComponent<TextMeshProUGUI>();
         copyText.text = result.ToString();
@@ -127,7 +128,7 @@ public class Judgement : MonoBehaviour
             cameraMoving.Zoom(13f, 0.25f);
             ExFire.Play();
         }
-
+        if (result != JudgeType.Miss) HitSystem.Play();
         Destroy(note.gameObject);
         Debug.Log($"Judgement : {result}");
     }
