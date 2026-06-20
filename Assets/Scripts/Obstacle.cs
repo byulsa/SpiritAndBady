@@ -1,4 +1,3 @@
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class Obstacle : MonoBehaviour
@@ -6,22 +5,33 @@ public class Obstacle : MonoBehaviour
     [Header("장애물 설정")]
     public float requiredSpeed = 50f;
 
+    [Header("파괴 설정")]
+    [SerializeField] private Rigidbody[] Rocks;
+    [SerializeField, Min(0f)] private float crashForceMultiplier = 1f;
+    [SerializeField, Range(0f, 2f)] private float directionNoise = 0.75f;
+
     private BackgroundLoop backgroundLoop;
     private TrainSpeedController speedController;
     private ObstacleSpawner spawner;
     private double arrivalDspTime;
     private bool isInitialized = false;
     private bool hasJudged = false;
-
+    private bool hasCrashed = false;
 
     void Start()
     {
-        backgroundLoop = Object.FindAnyObjectByType<BackgroundLoop>();
-        speedController = Object.FindAnyObjectByType<TrainSpeedController>();
+        backgroundLoop = FindAnyObjectByType<BackgroundLoop>();
+        speedController = FindAnyObjectByType<TrainSpeedController>();
+
+        if (Rocks == null || Rocks.Length == 0)
+            Rocks = GetComponentsInChildren<Rigidbody>(true);
     }
 
-    public void Init(ObstacleSpawner obstacleSpawner, double arrivalTime)
+    public void Init(ObstacleSpawner obstacleSpawner, double arrivalTime,
+    BackgroundLoop backgroundLoop, TrainSpeedController speedController)
     {
+        this.backgroundLoop = backgroundLoop;
+        this.speedController = speedController;
         spawner = obstacleSpawner;
         arrivalDspTime = arrivalTime;
         isInitialized = true;
@@ -36,6 +46,7 @@ public class Obstacle : MonoBehaviour
         if (!hasJudged && AudioSettings.dspTime >= arrivalDspTime)
         {
             hasJudged = true;
+            Crash();
             EvaluateSpeed();
         }
         if (transform.position.x < -20f)
@@ -56,6 +67,41 @@ public class Obstacle : MonoBehaviour
         {
             Debug.Log("실패!");
             spawner.OnObstacleFailed();
+        }
+    }
+    private void Crash()
+    {
+        if (hasCrashed)
+            return;
+
+        hasCrashed = true;
+
+        if (Rocks == null || Rocks.Length == 0)
+            Rocks = GetComponentsInChildren<Rigidbody>(true);
+
+        float movingSpeed = backgroundLoop != null
+            ? backgroundLoop.currentSpeed * obstacleSpeedScale
+            : 0f;
+        float crashForce = movingSpeed * crashForceMultiplier;
+
+        foreach (var rb in Rocks)
+        {
+            if (rb == null)
+                continue;
+
+            Vector3 direction = Vector3.right + Random.insideUnitSphere * directionNoise;
+            direction.x = Mathf.Max(0f, direction.x);
+
+            if (direction.sqrMagnitude < 0.0001f)
+                direction = Vector3.right;
+            else
+                direction.Normalize();
+
+            rb.transform.SetParent(null, true);
+            rb.isKinematic = false;
+            rb.useGravity = true;
+            rb.AddForce(direction * crashForce, ForceMode.Impulse);
+            rb.WakeUp();
         }
     }
 }

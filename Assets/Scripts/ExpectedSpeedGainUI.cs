@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using Unity.VisualScripting;
 public class ExpectedSpeedGainUI : MonoBehaviour
 {
     [SerializeField] private TMP_Text text;

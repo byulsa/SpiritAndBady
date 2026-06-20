@@ -1,4 +1,5 @@
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class TrainSpeedController : MonoBehaviour
@@ -20,6 +21,7 @@ public class TrainSpeedController : MonoBehaviour
     [SerializeField] private NoteGenerator NoteGenerator;
     [SerializeField] private BackgroundLoop backgroundLoop;
     [SerializeField] private Judgement judgement;
+    [SerializeField] private PatternInput PlayerInput;
 
     private void Awake()
     {
@@ -35,19 +37,36 @@ public class TrainSpeedController : MonoBehaviour
         {
             NoteGenerator = FindAnyObjectByType<NoteGenerator>();
         }
+        if (PlayerInput == null)
+        {
+            PlayerInput = FindAnyObjectByType<PatternInput>();
+        }
     }
     private void OnEnable()
     {
-        if (judgement != null)
+        if (judgement)
         {
             judgement.OnJudged += HandleJudge;
         }
-        if (NoteGenerator != null)
+        if (NoteGenerator)
         {
             NoteGenerator.OnWaveStarted += OnWaveStarted;
             NoteGenerator.OnMeasureStarted += OnMeasureStarted;
             NoteGenerator.OnWaveFinished += OnWaveFinished;
         }
+        if (PlayerInput)
+        {
+            PlayerInput.OnMeasureSelected += OnMeasureSelected;
+        }
+    }
+    private void OnMeasureSelected(int _, int Difficulty)
+    {
+        if (Difficulty < 0 || Difficulty >= DifficultySpeed.Length)
+        {
+            return;
+        }
+        TotalExpectedSpeedGain += DifficultySpeed[Difficulty];
+        OnExpectedSpeedGainChanged?.Invoke(TotalExpectedSpeedGain);
     }
     private void Start()
     {
@@ -70,6 +89,10 @@ public class TrainSpeedController : MonoBehaviour
             NoteGenerator.OnMeasureStarted -= OnMeasureStarted;
             NoteGenerator.OnWaveFinished -= OnWaveFinished;
         }
+        if (PlayerInput)
+        {
+            PlayerInput.OnMeasureSelected -= OnMeasureSelected;
+        }
     }
     private void OnWaveFinished()
     {
@@ -91,7 +114,6 @@ public class TrainSpeedController : MonoBehaviour
         {
             TotalExpectedSpeedGain += DifficultySpeed[(int)data.difficulty];
         }
-
         OnExpectedSpeedGainChanged?.Invoke(TotalExpectedSpeedGain);
     }
     private void OnMeasureStarted(int index)

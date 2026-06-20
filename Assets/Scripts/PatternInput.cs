@@ -119,7 +119,7 @@ public class PatternInput : MonoBehaviour
         SelectionEndMeasureIndex =
             rythmManager.CurrentMeasureIndex + Mathf.Max(1, selectionMeasureCount);
         IsSelecting = true;
-
+        
         Debug.Log(
             $"Pattern selection started. Deadline: measure " +
             $"{SelectionEndMeasureIndex + 1}");

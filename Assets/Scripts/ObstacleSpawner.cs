@@ -126,7 +126,7 @@ public class ObstacleSpawner : MonoBehaviour
         {
             obstacle.requiredSpeed = currentRequiredSpeed;
             obstacle.obstacleSpeedScale = obstacleSpeedScale;
-            obstacle.Init(this, arrivalDspTime);
+            obstacle.Init(this, arrivalDspTime, backgroundLoop, trainSpeedController);
         }
     }
 }

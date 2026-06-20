@@ -1997,6 +1997,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BackgroundLoop
   currentSpeed: 0
+  SpeedMultiplier: 0.5
 --- !u!1 &539523603
 GameObject:
   m_ObjectHideFlags: 0
@@ -2367,7 +2368,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ObstacleSpawner
   obstaclePrefabs:
-  - {fileID: 836772444561234050, guid: 62c07bf4f02daa24da800776b35f4cf7, type: 3}
+  - {fileID: 643912063756001946, guid: 4c1191d54a0aa4730a73332dba5040cb, type: 3}
   spawnPoint: {fileID: 1430660511}
   isTestMode: 0
   testSpawnKey: 32
@@ -2378,6 +2379,7 @@ MonoBehaviour:
   maxRequiredSpeed: 170
   obstacleSpeedScale: 0.1
   obstacleYOffset: 0.2
+  currentRequiredSpeed: 0
   rythmManager: {fileID: 2091660994}
   noteGenerator: {fileID: 1347530142}
   Input: {fileID: 2054379976}
@@ -6113,6 +6115,7 @@ MonoBehaviour:
   NoteGenerator: {fileID: 1347530142}
   backgroundLoop: {fileID: 514417092}
   judgement: {fileID: 1443290737}
+  PlayerInput: {fileID: 2054379976}
 --- !u!1 &2089457401
 GameObject:
   m_ObjectHideFlags: 0
