@@ -86,8 +86,12 @@ public class ObstacleSpawner : MonoBehaviour
         int randomIndex = Random.Range(0, obstaclePrefabs.Length);
         GameObject obj = Instantiate(obstaclePrefabs[randomIndex], spawnPos, Quaternion.identity);
 
+        double arrivalDspTime = AudioSettings.dspTime + timeToHit;
+
+        Debug.Log($"장애물 스폰 / timeToHit: {timeToHit:F3}초 / spawnX: {spawnX:F2}");
+
         Obstacle obstacle = obj.GetComponent<Obstacle>();
         if (obstacle != null)
-            obstacle.Init(this);
+            obstacle.Init(this, arrivalDspTime);
     }
 }

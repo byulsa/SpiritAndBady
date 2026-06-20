@@ -2,15 +2,15 @@ using UnityEngine;
 
 public class Obstacle : MonoBehaviour
 {
-    [Header("�ִ� �ӵ�")]
+    [Header("장애물 설정")]
     public float requiredSpeed = 50f;
 
     private BackgroundLoop backgroundLoop;
     private TrainSpeedController speedController;
     private ObstacleSpawner spawner;
-    private Vector3 targetPosition; // ���� ��ġ
-    private double arriveTime;      // ���� DSP Ÿ��
+    private double arrivalDspTime;
     private bool isInitialized = false;
+    private bool hasJudged = false;
 
     void Start()
     {
@@ -18,10 +18,12 @@ public class Obstacle : MonoBehaviour
         speedController = Object.FindAnyObjectByType<TrainSpeedController>();
     }
 
-    public void Init(ObstacleSpawner obstacleSpawner)
+    public void Init(ObstacleSpawner obstacleSpawner, double arrivalTime)
     {
         spawner = obstacleSpawner;
+        arrivalDspTime = arrivalTime;
         isInitialized = true;
+        Debug.Log($"장애물 생성 / 도달 예정 DSP: {arrivalDspTime:F3} / 현재 DSP: {AudioSettings.dspTime:F3}");
     }
 
     void Update()
@@ -30,18 +32,30 @@ public class Obstacle : MonoBehaviour
 
         transform.Translate(Vector3.left * backgroundLoop.currentSpeed * Time.deltaTime);
 
+        if (!hasJudged && AudioSettings.dspTime >= arrivalDspTime)
+        {
+            hasJudged = true;
+            EvaluateSpeed();
+        }
+
         if (transform.position.x < -20f)
             Destroy(gameObject);
     }
 
-    void OnTriggerEnter(Collider other)
+    void EvaluateSpeed()
     {
-        if (other.CompareTag("Train"))
+        float speed = speedController.GetCurrentSpeed();
+        Debug.Log($"충돌 판정 / 현재속도: {speed} / 요구속도: {requiredSpeed}");
+
+        if (speed >= requiredSpeed)
         {
-            if (speedController.GetCurrentSpeed() >= requiredSpeed)
-                spawner.OnObstaclePassed();
-            else
-                spawner.OnObstacleFailed();
+            Debug.Log("통과!");
+            spawner.OnObstaclePassed();
+        }
+        else
+        {
+            Debug.Log("실패!");
+            spawner.OnObstacleFailed();
         }
     }
 }
