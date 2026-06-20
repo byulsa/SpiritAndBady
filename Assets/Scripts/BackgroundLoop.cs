@@ -24,9 +24,18 @@ public class BackgroundLoop : MonoBehaviour
         bgWidth = backgrounds[0].GetComponent<Renderer>().bounds.size.x;
     }
 
+    private float targetSpeed = 0f;
+
+    public void SetSpeed(float speed)
+    {
+        targetSpeed = speed;
+    }
+
     void Update()
     {
         if (isTestMode) HandleTestInput();
+
+        currentSpeed = Mathf.Lerp(currentSpeed, targetSpeed, Time.deltaTime * 3f);
 
         transform.Translate(Vector3.left * currentSpeed * Time.deltaTime);
 
@@ -50,10 +59,6 @@ public class BackgroundLoop : MonoBehaviour
         SetSpeed(testSpeed);
     }
 
-    public void SetSpeed(float speed)
-    {
-        currentSpeed = Mathf.Lerp(currentSpeed, speed, Time.deltaTime * 3f);
-    }
 
     float GetRightmostX()
     {
