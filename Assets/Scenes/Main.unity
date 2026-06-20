@@ -1640,6 +1640,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   image: {fileID: 1632220876}
+  TickRect: {fileID: 974378056}
+  Duration: 1.5
   speedText: {fileID: 92303703}
   Controller: {fileID: 2065287077}
 --- !u!1 &514417087
@@ -1825,10 +1827,16 @@ MonoBehaviour:
   - bpm: 100
     bars: 32
     clip: {fileID: 8300000, guid: 70e7e43da7e245f1b4c15ef0d095bc4c, type: 3}
+  - bpm: 140
+    bars: 32
+    clip: {fileID: 8300000, guid: cb0ffbcb093e4f3c847dbc12ca4d09ed, type: 3}
+  - bpm: 180
+    bars: 32
+    clip: {fileID: 8300000, guid: 2aa8b675129b43cd8463807be2837047, type: 3}
   rythmManager: {fileID: 2091660994}
   primarySource: {fileID: 539523607}
   secondarySource: {fileID: 459534430}
-  volume: 0.75
+  volume: 0.9
   trackCrossfadeSeconds: 0.08
   preservePitch: 1
   musicMixerGroup: {fileID: -1499765459929637154, guid: 82945973f244442669015af43b7731c5, type: 2}
