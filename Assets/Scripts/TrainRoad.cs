@@ -13,16 +13,12 @@ public class TrainRoad : MonoBehaviour
     [SerializeField] private Transform endPosition;
 
     [Header("Speed")]
-    [SerializeField] private BackgroundLoop backgroundLoop;
-    [SerializeField] private float speedScale = 0.01f;
+    [SerializeField] private float moveSpeed = 5f;
 
     private int index;
 
     private void Awake()
     {
-        if (backgroundLoop == null)
-            backgroundLoop = FindAnyObjectByType<BackgroundLoop>();
-
         if (startPosition == null)
             startPosition = transform.Find("StartPosition");
 
@@ -41,8 +37,7 @@ public class TrainRoad : MonoBehaviour
 
     private bool CanMove()
     {
-        return backgroundLoop != null
-            && trainRoads != null
+        return trainRoads != null
             && trainRoads.Length > 0
             && startPosition != null
             && endPosition != null;
@@ -77,7 +72,7 @@ public class TrainRoad : MonoBehaviour
     private void Move()
     {
         Vector3 moveDirection = (endPosition.position - startPosition.position).normalized;
-        float moveDistance = backgroundLoop.currentSpeed * speedScale * Time.deltaTime;
+        float moveDistance = moveSpeed * Time.deltaTime;
 
         foreach (Transform road in trainRoads)
         {
