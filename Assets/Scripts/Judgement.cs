@@ -4,6 +4,7 @@ using System;
 using TMPro;
 using JetBrains.Annotations;
 using UnityEngine.Timeline;
+using System.Collections;
 
 public enum JudgeType
 {
@@ -28,11 +29,17 @@ public class Judgement : MonoBehaviour
     public JudgeType judgeType = JudgeType.Perfect;
 
     private readonly List<Transform> notes = new();
+
     [Header("Judgement Particle")]
     public ParticleSystem ExFire;
+
     [Header("Judgement Text")]
     public TextMeshProUGUI judgeText;
     private Animator judgeTextAnim;
+
+    [Header("Judgement Text FX")]
+    public float fxRiseAmount = 0.05f;
+    public float fxDuration = 0.2f;
 
     [Header("Judgement Sound")]
     public AudioSource audioSource;
@@ -44,13 +51,13 @@ public class Judgement : MonoBehaviour
     private void Awake()
     {
         if (audioSource == null)
-        {
             audioSource = GetComponent<AudioSource>();
-        }
     }
+
     void Start()
     {
         judgeTextAnim = judgeText.GetComponent<Animator>();
+        judgeText.alpha = 0f;
     }
 
     private void Update()
@@ -58,49 +65,30 @@ public class Judgement : MonoBehaviour
         CheckMiss();
 
         if (Input.GetKeyDown(KeyCode.Space))
-        {
             JudgeCurrentNote();
-        }
     }
 
     public void RegisterNote(Transform note)
     {
         if (note != null)
-        {
             notes.Add(note);
-        }
     }
 
     private void CheckMiss()
     {
         Transform note = GetCurrentNote();
-
-        if (note == null)
-        {
-            return;
-        }
+        if (note == null) return;
 
         TimedNoteMover mover = note.GetComponent<TimedNoteMover>();
-
         if (mover != null && mover.HasPassedJudgementPoint(goodRange))
-        {
             ResolveNote(note, JudgeType.Miss);
-        }
     }
 
     public void JudgeCurrentNote()
     {
         Transform note = GetCurrentNote();
-
-        if (note == null)
-        {
-            return;
-        }
-
-        if (!CanJudge(note))
-        {
-            return;
-        }
+        if (note == null) return;
+        if (!CanJudge(note)) return;
 
         ResolveNote(note, Judge(note));
     }
@@ -108,56 +96,71 @@ public class Judgement : MonoBehaviour
     public JudgeType Judge(Transform note)
     {
         if (note == null || judgeLine == null)
-        {
             return JudgeType.Miss;
-        }
 
         float distance = Mathf.Abs(note.position.x - judgeLine.position.x);
 
-        if (distance <= perfectRange)
-        {
-            return JudgeType.Perfect;
-        }
-
-        if (distance <= goodRange)
-        {
-            return JudgeType.Good;
-        }
-
+        if (distance <= perfectRange) return JudgeType.Perfect;
+        if (distance <= goodRange) return JudgeType.Good;
         return JudgeType.Miss;
     }
 
     public void ResolveNote(Transform note, JudgeType result)
     {
         judgeType = result;
-
         OnJudged?.Invoke(result);
         PlayJudgementSound(result);
-
-
-        if (note == null)
-        {
-            return;
-        }
 
         notes.RemoveAt(0);
         judgeText.text = result.ToString();
         judgeTextAnim.Play("OnPlay");
+        StartCoroutine(HideOriginalText());
+
+        // 복사본 생성해서 FadeOut
+        GameObject copy = Instantiate(judgeText.gameObject, judgeText.transform.position, Quaternion.identity, judgeText.transform.parent);
+        TextMeshProUGUI copyText = copy.GetComponent<TextMeshProUGUI>();
+        copyText.text = result.ToString();
+        StartCoroutine(AnimateFX(copy, copyText));
+
         if (result == JudgeType.Perfect)
         {
             cameraMoving.Zoom(13f, 0.25f);
             ExFire.Play();
         }
+
         Destroy(note.gameObject);
         Debug.Log($"Judgement : {result}");
     }
 
+    IEnumerator HideOriginalText()
+    {
+        yield return new WaitForSeconds(fxDuration);
+        judgeText.alpha = 0f;
+    }
+
+    IEnumerator AnimateFX(GameObject obj, TextMeshProUGUI tmp)
+    {
+        float elapsed = 0f;
+        Vector3 startPos = obj.transform.position;
+        Vector3 endPos = startPos + new Vector3(0f, fxRiseAmount, 0f);
+
+        while (elapsed < fxDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / fxDuration;
+
+            obj.transform.position = Vector3.Lerp(startPos, endPos, t);
+            tmp.alpha = Mathf.Lerp(1f, 0f, Mathf.Clamp01((t - 0.3f) / 0.7f));
+
+            yield return null;
+        }
+
+        Destroy(obj);
+    }
+
     private void PlayJudgementSound(JudgeType result)
     {
-        if (audioSource == null)
-        {
-            return;
-        }
+        if (audioSource == null) return;
 
         AudioClip clip = result switch
         {
@@ -168,64 +171,39 @@ public class Judgement : MonoBehaviour
         };
 
         if (clip != null)
-        {
             audioSource.PlayOneShot(clip, judgementSoundVolume);
-        }
     }
 
     public bool CanJudge(Transform note)
     {
-        if (note == null)
-        {
-            return false;
-        }
-
+        if (note == null) return false;
         float distance = Mathf.Abs(note.position.x - judgeLine.position.x);
-
         return distance <= missRange;
     }
 
     private Transform GetCurrentNote()
     {
         while (notes.Count > 0 && notes[0] == null)
-        {
             notes.RemoveAt(0);
-        }
 
-        if (notes.Count == 0)
-        {
-            return null;
-        }
-
+        if (notes.Count == 0) return null;
         return notes[0];
     }
 
     private void OnDrawGizmos()
     {
-        if (judgeLine == null)
-        {
-            return;
-        }
+        if (judgeLine == null) return;
 
         Vector3 center = judgeLine.position;
         float height = 1f;
 
-        // Perfect
         Gizmos.color = Color.cyan;
-        Gizmos.DrawWireCube(
-            center,
-            new Vector3(perfectRange * 2f, height, 0.1f));
+        Gizmos.DrawWireCube(center, new Vector3(perfectRange * 2f, height, 0.1f));
 
-        // Good
         Gizmos.color = Color.green;
-        Gizmos.DrawWireCube(
-            center,
-            new Vector3(goodRange * 2f, height, 0.1f));
+        Gizmos.DrawWireCube(center, new Vector3(goodRange * 2f, height, 0.1f));
 
-        // Miss
         Gizmos.color = Color.red;
-        Gizmos.DrawWireCube(
-            center,
-            new Vector3(missRange * 2f, height, 0.1f));
+        Gizmos.DrawWireCube(center, new Vector3(missRange * 2f, height, 0.1f));
     }
 }

@@ -93,7 +93,6 @@ public class TrainSpeedController : MonoBehaviour
         }
 
         OnExpectedSpeedGainChanged?.Invoke(TotalExpectedSpeedGain);
-        backgroundLoop.SetSpeed(currentSpeed + TotalExpectedSpeedGain);
     }
     private void OnMeasureStarted(int index)
     {
@@ -110,7 +109,6 @@ public class TrainSpeedController : MonoBehaviour
         {
             TotalExpectedSpeedGain -= decreaseSpeed;
             OnExpectedSpeedGainChanged?.Invoke(TotalExpectedSpeedGain);
-            backgroundLoop.SetSpeed(currentSpeed + TotalExpectedSpeedGain);
         }
     }
     public float GetCurrentSpeed() => currentSpeed;

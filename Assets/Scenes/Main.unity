@@ -1640,7 +1640,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   image: {fileID: 1632220876}
-  TickRect: {fileID: 974378056}
+  TickRect: {fileID: 0}
   Duration: 1.5
   speedText: {fileID: 92303703}
   Controller: {fileID: 2065287077}
@@ -3666,6 +3666,8 @@ MonoBehaviour:
   judgeType: 1
   ExFire: {fileID: 1691548852}
   judgeText: {fileID: 2036858543}
+  fxRiseAmount: 0.05
+  fxDuration: 0.2
   audioSource: {fileID: 1443290743}
   perfectSound: {fileID: 8300000, guid: 54052d62c361341a48ac4e7412ad4aaa, type: 3}
   goodSound: {fileID: 8300000, guid: 54052d62c361341a48ac4e7412ad4aaa, type: 3}
@@ -5165,7 +5167,7 @@ GameObject:
   - component: {fileID: 2036858541}
   - component: {fileID: 2036858544}
   - component: {fileID: 2036858543}
-  - component: {fileID: 2036858542}
+  - component: {fileID: 2036858545}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -5180,7 +5182,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2036858540}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -5192,28 +5194,6 @@ RectTransform:
   m_AnchoredPosition: {x: 8.5, y: 16.09}
   m_SizeDelta: {x: 65.62, y: 17.83}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!95 &2036858542
-Animator:
-  serializedVersion: 7
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2036858540}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: d63ad2eacdc0a094db44a7f3f2b5372a, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &2036858543
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5314,6 +5294,28 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2036858540}
   m_CullTransparentMesh: 1
+--- !u!95 &2036858545
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2036858540}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: d63ad2eacdc0a094db44a7f3f2b5372a, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &2054379974
 GameObject:
   m_ObjectHideFlags: 0
