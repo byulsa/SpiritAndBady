@@ -24,6 +24,7 @@ public class Judgement : MonoBehaviour
     public JudgeType judgeType = JudgeType.Perfect;
 
     private readonly List<Transform> notes = new();
+    public AudioSource audioSource;
 
     private void Update()
     {
@@ -113,7 +114,7 @@ public class Judgement : MonoBehaviour
         notes.RemoveAt(0);
 
         Destroy(note.gameObject);
-
+        audioSource.Play();
         Debug.Log($"Judgement : {result}");
     }
 
