@@ -65,7 +65,7 @@ public class ObstacleSpawner : MonoBehaviour
         trainSpeedController?.OnObstacleResult(true);
         currentRequiredSpeed = Mathf.Min(currentRequiredSpeed + successIncrease, maxRequiredSpeed);
         if (rythmManager != null)
-            rythmManager.ChangeBpmOnNextMeasure(rythmManager.BPM + 10f);
+            rythmManager.AddBpmOnNextMeasure(10f);
 
         rythmManager.RunOnNextMeasure(() => {
             if (Input != null)

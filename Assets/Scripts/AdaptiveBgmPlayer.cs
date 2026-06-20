@@ -16,33 +16,31 @@ public class AdaptiveBgmPlayer : MonoBehaviour
     }
 
     [Header("BPM Tracks")]
-    [Tooltip("Assign tracks in ascending order, for example 60, 90, 120, 160 BPM.")]
+    [Tooltip("Assign base tracks in ascending order, for example 60, 100, 120, 160 BPM.")]
     [SerializeField] private BpmTrack[] tracks;
-    [SerializeField, Min(1)] private int initialBpm = 60;
-    [SerializeField, Min(1)] private int bpmStep = 10;
 
-    [Header("Game References")]
+    [Header("Rhythm Source")]
+    [Tooltip("The sole owner of the clock and BPM. This component only subscribes to its events.")]
     [SerializeField] private RythmManager rythmManager;
-    [SerializeField] private TrainSpeedController speedController;
 
     [Header("Audio Sources")]
-    [Tooltip("Use two sources so changing to another base track can crossfade cleanly.")]
+    [Tooltip("Two sources allow a new speed or base track to be DSP-scheduled on a measure boundary.")]
     [SerializeField] private AudioSource primarySource;
     [SerializeField] private AudioSource secondarySource;
     [SerializeField, Range(0f, 1f)] private float volume = 0.75f;
+    [Tooltip("The old source fades out immediately before the scheduled measure boundary.")]
     [SerializeField, Range(0f, 0.5f)] private float trackCrossfadeSeconds = 0.08f;
 
     [Header("Pitch Preservation")]
-    [Tooltip("Enable this after routing both AudioSources through a Music AudioMixer group with a Pitch Shifter effect.")]
+    [Tooltip("Route both sources through a Music group with a Pitch Shifter effect.")]
     [SerializeField] private bool preservePitch = true;
-    [Tooltip("Music group that contains the Pitch Shifter effect. Both AudioSources are routed here.")]
     [SerializeField] private AudioMixerGroup musicMixerGroup;
     [SerializeField] private AudioMixer pitchCompensationMixer;
     [Tooltip("Exposed Pitch parameter of the AudioMixer Pitch Shifter effect.")]
     [SerializeField] private string pitchCompensationParameter = "BgmPitchCompensation";
 
-    public int RequestedBpm { get; private set; }
     public int CurrentBpm { get; private set; }
+    public int ScheduledBpm { get; private set; }
     public int CurrentSourceBpm => activeTrack != null ? activeTrack.bpm : 0;
     public float CurrentPlaybackRate { get; private set; } = 1f;
 
@@ -50,196 +48,256 @@ public class AdaptiveBgmPlayer : MonoBehaviour
 
     private AudioSource activeSource;
     private AudioSource inactiveSource;
+    private AudioSource pendingSource;
     private BpmTrack activeTrack;
-    private Coroutine crossfadeRoutine;
+    private Coroutine transitionRoutine;
+    private double activeStartDspTime = double.NegativeInfinity;
     private bool warnedAboutPitchMixer;
 
     private void Awake()
     {
-        FindReferences();
+        FindRythmManager();
         FindOrCreateAudioSources();
         ConfigureAudioSource(primarySource);
         ConfigureAudioSource(secondarySource);
 
         activeSource = primarySource;
         inactiveSource = secondarySource;
-        RequestedBpm = QuantizeBpm(initialBpm);
     }
 
     private void OnEnable()
     {
-        if (speedController != null)
-        {
-            speedController.OnSpeedChanged += HandleSpeedChanged;
-        }
-
-        if (rythmManager != null)
-        {
-            rythmManager.OnMeasureStart += HandleMeasureStart;
-        }
+        FindRythmManager();
+        SubscribeToRythmManager();
     }
 
     private void Start()
     {
-        float speed = speedController != null ? speedController.GetCurrentSpeed() : 0f;
-        RequestBpm(speed > 0f ? speed : initialBpm);
+        if (rythmManager == null)
+        {
+            Debug.LogError("AdaptiveBgmPlayer requires RythmManager.", this);
+            return;
+        }
+
+        // Handles a BGM object that was enabled after the clock had already started.
+        if (rythmManager.IsRunning && activeTrack == null)
+        {
+            int targetMeasureIndex = rythmManager.CurrentMeasureIndex < 0
+                ? 0
+                : rythmManager.CurrentMeasureIndex + 1;
+            ScheduleInitialPlayback(
+                rythmManager.NextMeasureBPM,
+                rythmManager.GetNextMeasureDspTime(0f),
+                targetMeasureIndex);
+        }
     }
 
     private void OnDisable()
     {
-        if (speedController != null)
-        {
-            speedController.OnSpeedChanged -= HandleSpeedChanged;
-        }
-
-        if (rythmManager != null)
-        {
-            rythmManager.OnMeasureStart -= HandleMeasureStart;
-        }
+        UnsubscribeFromRythmManager();
+        StopPlayback();
     }
 
-    public void RequestBpm(float bpm)
+    private void HandleClockScheduled(double startDspTime, float bpm)
     {
-        int quantizedBpm = QuantizeBpm(bpm);
-        if (!HasUsableTracks())
+        ScheduleInitialPlayback(bpm, startDspTime, 0);
+    }
+
+    private void HandleClockStopped()
+    {
+        StopPlayback();
+    }
+
+    private void HandleBpmChangeScheduled(
+        float bpm,
+        double effectiveDspTime,
+        int targetMeasureIndex)
+    {
+        int targetBpm = Mathf.RoundToInt(bpm);
+        ScheduledBpm = targetBpm;
+
+        if (activeTrack == null ||
+            (!activeSource.isPlaying && AudioSettings.dspTime < activeStartDspTime))
         {
-            Debug.LogError("AdaptiveBgmPlayer needs at least one BPM track with an AudioClip.", this);
+            ScheduleInitialPlayback(targetBpm, effectiveDspTime, targetMeasureIndex);
             return;
         }
 
-        RequestedBpm = quantizedBpm;
+        ScheduleTransition(targetBpm, effectiveDspTime, targetMeasureIndex);
+    }
 
-        if (rythmManager != null && rythmManager.IsRunning)
+    private void ScheduleInitialPlayback(float bpm, double dspTime, int measureIndex)
+    {
+        if (!TryGetPlayback(bpm, out int targetBpm, out BpmTrack track, out float playbackRate))
         {
-            rythmManager.ChangeBpmOnNextMeasure(RequestedBpm);
             return;
         }
 
-        ApplyBpm(RequestedBpm, 0);
-    }
-
-    public void Stop()
-    {
-        if (crossfadeRoutine != null)
-        {
-            StopCoroutine(crossfadeRoutine);
-            crossfadeRoutine = null;
-        }
-
+        CancelTransition();
         primarySource.Stop();
         secondarySource.Stop();
-        activeTrack = null;
-        CurrentBpm = 0;
-        CurrentPlaybackRate = 1f;
-        ApplyPitchCompensation(1f);
+
+        activeSource = primarySource;
+        inactiveSource = secondarySource;
+        pendingSource = null;
+        activeTrack = track;
+        activeStartDspTime = dspTime;
+        ScheduledBpm = targetBpm;
+
+        PrepareSource(
+            activeSource,
+            track,
+            playbackRate,
+            GetMeasureStartSample(track, measureIndex));
+        ApplyPitchCompensation(playbackRate);
+        activeSource.PlayScheduled(Math.Max(dspTime, AudioSettings.dspTime));
+
+        transitionRoutine = StartCoroutine(
+            CompleteInitialStartAtDsp(targetBpm, playbackRate, dspTime));
     }
 
-    private void HandleSpeedChanged(float speed)
+    private void ScheduleTransition(int targetBpm, double dspTime, int measureIndex)
     {
-        RequestBpm(speed);
-    }
-
-    private void HandleMeasureStart(int measureIndex)
-    {
-        if (activeTrack == null || !activeSource.isPlaying || CurrentBpm != RequestedBpm)
+        if (!TryGetPlayback(
+                targetBpm,
+                out int resolvedBpm,
+                out BpmTrack nextTrack,
+                out float playbackRate))
         {
-            ApplyBpm(RequestedBpm, measureIndex);
-        }
-    }
-
-    private void ApplyBpm(int targetBpm, int measureIndex)
-    {
-        BpmTrack selectedTrack = FindTrackForBpm(targetBpm);
-        if (selectedTrack == null)
-        {
-            Debug.LogError($"No BGM track is available for {targetBpm} BPM.", this);
             return;
         }
 
-        float playbackRate = (float)targetBpm / selectedTrack.bpm;
-        if (playbackRate < 0.5f || playbackRate > 2f)
+        targetBpm = resolvedBpm;
+
+        CancelTransition();
+
+        AudioSource oldSource = activeSource;
+        AudioSource newSource = inactiveSource;
+        int startSample = nextTrack == activeTrack
+            ? GetMeasureStartSample(nextTrack, measureIndex)
+            : 0;
+
+        PrepareSource(newSource, nextTrack, playbackRate, startSample);
+        newSource.PlayScheduled(Math.Max(dspTime, AudioSettings.dspTime));
+        oldSource.SetScheduledEndTime(Math.Max(dspTime, AudioSettings.dspTime));
+
+        pendingSource = newSource;
+        ScheduledBpm = targetBpm;
+        transitionRoutine = StartCoroutine(
+            CompleteTransitionAtDsp(
+                oldSource,
+                newSource,
+                nextTrack,
+                targetBpm,
+                playbackRate,
+                dspTime));
+    }
+
+    private IEnumerator CompleteInitialStartAtDsp(
+        int targetBpm,
+        float playbackRate,
+        double dspTime)
+    {
+        while (AudioSettings.dspTime < dspTime)
         {
-            Debug.LogError(
-                $"{selectedTrack.bpm} BPM track cannot safely cover {targetBpm} BPM. " +
-                "Add another base track so the playback-rate ratio stays between 0.5 and 2.0.",
-                this);
-            return;
+            yield return null;
         }
 
         CurrentBpm = targetBpm;
         CurrentPlaybackRate = playbackRate;
-        ApplyPitchCompensation(playbackRate);
-
-        if (activeTrack == selectedTrack && activeSource.isPlaying)
-        {
-            activeSource.pitch = playbackRate;
-            OnBpmApplied?.Invoke(CurrentBpm);
-            return;
-        }
-
-        StartSelectedTrack(selectedTrack, measureIndex, playbackRate);
+        transitionRoutine = null;
         OnBpmApplied?.Invoke(CurrentBpm);
     }
 
-    private void StartSelectedTrack(BpmTrack selectedTrack, int measureIndex, float playbackRate)
+    private IEnumerator CompleteTransitionAtDsp(
+        AudioSource oldSource,
+        AudioSource newSource,
+        BpmTrack nextTrack,
+        int targetBpm,
+        float playbackRate,
+        double dspTime)
     {
-        if (crossfadeRoutine != null)
+        double fadeStartDspTime = dspTime - trackCrossfadeSeconds;
+
+        while (AudioSettings.dspTime < dspTime)
         {
-            StopCoroutine(crossfadeRoutine);
-            crossfadeRoutine = null;
-        }
+            if (trackCrossfadeSeconds > 0f && AudioSettings.dspTime >= fadeStartDspTime)
+            {
+                float remaining = (float)(dspTime - AudioSettings.dspTime);
+                oldSource.volume = volume * Mathf.Clamp01(remaining / trackCrossfadeSeconds);
+            }
 
-        AudioSource oldSource = activeSource;
-        AudioSource newSource = activeTrack == null ? activeSource : inactiveSource;
-
-        newSource.Stop();
-        newSource.clip = selectedTrack.clip;
-        newSource.pitch = playbackRate;
-        newSource.loop = true;
-        newSource.timeSamples = GetMeasureStartSample(selectedTrack, measureIndex);
-
-        bool shouldCrossfade = activeTrack != null && oldSource.isPlaying && trackCrossfadeSeconds > 0f;
-        newSource.volume = shouldCrossfade ? 0f : volume;
-        newSource.Play();
-
-        activeSource = newSource;
-        inactiveSource = oldSource == newSource ? secondarySource : oldSource;
-        activeTrack = selectedTrack;
-
-        if (shouldCrossfade)
-        {
-            crossfadeRoutine = StartCoroutine(Crossfade(oldSource, newSource));
-        }
-        else if (oldSource != newSource)
-        {
-            oldSource.Stop();
-        }
-    }
-
-    private IEnumerator Crossfade(AudioSource oldSource, AudioSource newSource)
-    {
-        float elapsed = 0f;
-        float oldStartVolume = oldSource.volume;
-
-        while (elapsed < trackCrossfadeSeconds)
-        {
-            elapsed += Time.unscaledDeltaTime;
-            float progress = Mathf.Clamp01(elapsed / trackCrossfadeSeconds);
-            oldSource.volume = oldStartVolume * Mathf.Cos(progress * Mathf.PI * 0.5f);
-            newSource.volume = volume * Mathf.Sin(progress * Mathf.PI * 0.5f);
             yield return null;
         }
 
+        ApplyPitchCompensation(playbackRate);
         oldSource.Stop();
         oldSource.volume = volume;
-        newSource.volume = volume;
-        crossfadeRoutine = null;
+
+        activeSource = newSource;
+        inactiveSource = oldSource;
+        pendingSource = null;
+        activeTrack = nextTrack;
+        activeStartDspTime = dspTime;
+        CurrentBpm = targetBpm;
+        CurrentPlaybackRate = playbackRate;
+        transitionRoutine = null;
+
+        OnBpmApplied?.Invoke(CurrentBpm);
+    }
+
+    private bool TryGetPlayback(
+        float bpm,
+        out int targetBpm,
+        out BpmTrack track,
+        out float playbackRate)
+    {
+        targetBpm = Mathf.Max(1, Mathf.RoundToInt(bpm));
+        track = FindTrackForBpm(targetBpm);
+        playbackRate = 1f;
+
+        if (track == null)
+        {
+            Debug.LogError($"No BGM track is available for {targetBpm} BPM.", this);
+            return false;
+        }
+
+        playbackRate = (float)targetBpm / track.bpm;
+        if (playbackRate < 0.5f || playbackRate > 2f)
+        {
+            Debug.LogError(
+                $"{track.bpm} BPM track cannot safely cover {targetBpm} BPM. " +
+                "Add another base track so the playback-rate ratio stays between 0.5 and 2.0.",
+                this);
+            return false;
+        }
+
+        return true;
+    }
+
+    private void PrepareSource(
+        AudioSource source,
+        BpmTrack track,
+        float playbackRate,
+        int startSample)
+    {
+        source.Stop();
+        source.clip = track.clip;
+        source.pitch = playbackRate;
+        source.loop = true;
+        source.volume = volume;
+        source.timeSamples = startSample;
     }
 
     private BpmTrack FindTrackForBpm(int targetBpm)
     {
         BpmTrack lowestTrack = null;
         BpmTrack bestTrack = null;
+
+        if (tracks == null)
+        {
+            return null;
+        }
 
         foreach (BpmTrack track in tracks)
         {
@@ -292,41 +350,75 @@ public class AdaptiveBgmPlayer : MonoBehaviour
         }
     }
 
-    private int QuantizeBpm(float bpm)
+    private void StopPlayback()
     {
-        int step = Mathf.Max(1, bpmStep);
-        return Mathf.Max(step, Mathf.RoundToInt(bpm / step) * step);
+        CancelTransition();
+        primarySource.Stop();
+        secondarySource.Stop();
+        primarySource.volume = volume;
+        secondarySource.volume = volume;
+        activeSource = primarySource;
+        inactiveSource = secondarySource;
+        pendingSource = null;
+        activeTrack = null;
+        activeStartDspTime = double.NegativeInfinity;
+        CurrentBpm = 0;
+        ScheduledBpm = 0;
+        CurrentPlaybackRate = 1f;
+        ApplyPitchCompensation(1f);
     }
 
-    private bool HasUsableTracks()
+    private void CancelTransition()
     {
-        if (tracks == null)
+        if (transitionRoutine != null)
         {
-            return false;
+            StopCoroutine(transitionRoutine);
+            transitionRoutine = null;
         }
 
-        foreach (BpmTrack track in tracks)
+        if (pendingSource != null && pendingSource != activeSource)
         {
-            if (track != null && track.clip != null && track.bpm > 0)
-            {
-                return true;
-            }
+            pendingSource.Stop();
+            pendingSource.volume = volume;
         }
 
-        return false;
+        pendingSource = null;
+        if (activeSource != null)
+        {
+            activeSource.volume = volume;
+        }
     }
 
-    private void FindReferences()
+    private void FindRythmManager()
     {
         if (rythmManager == null)
         {
             rythmManager = FindAnyObjectByType<RythmManager>();
         }
+    }
 
-        if (speedController == null)
+    private void SubscribeToRythmManager()
+    {
+        if (rythmManager == null)
         {
-            speedController = FindAnyObjectByType<TrainSpeedController>();
+            return;
         }
+
+        rythmManager.OnClockScheduled += HandleClockScheduled;
+        rythmManager.OnClockStopped += HandleClockStopped;
+        rythmManager.OnBpmChangeScheduled += HandleBpmChangeScheduled;
+    }
+
+    private void UnsubscribeFromRythmManager()
+    {
+        if (rythmManager == null)
+        {
+            return;
+        }
+
+        rythmManager.OnClockScheduled -= HandleClockScheduled;
+        rythmManager.OnClockStopped -= HandleClockStopped;
+        rythmManager.OnBpmChangeScheduled -= HandleBpmChangeScheduled;
     }
 
     private void FindOrCreateAudioSources()
@@ -335,16 +427,18 @@ public class AdaptiveBgmPlayer : MonoBehaviour
 
         if (primarySource == null)
         {
-            primarySource = sources.Length > 0 ? sources[0] : gameObject.AddComponent<AudioSource>();
+            primarySource = sources.Length > 0
+                ? sources[0]
+                : gameObject.AddComponent<AudioSource>();
         }
 
         if (secondarySource == null || secondarySource == primarySource)
         {
-            for (int i = 0; i < sources.Length; i++)
+            foreach (AudioSource source in sources)
             {
-                if (sources[i] != primarySource)
+                if (source != primarySource)
                 {
-                    secondarySource = sources[i];
+                    secondarySource = source;
                     break;
                 }
             }
@@ -376,9 +470,6 @@ public class AdaptiveBgmPlayer : MonoBehaviour
 
     private void OnValidate()
     {
-        initialBpm = Mathf.Max(1, initialBpm);
-        bpmStep = Mathf.Max(1, bpmStep);
-
         if (tracks == null)
         {
             return;

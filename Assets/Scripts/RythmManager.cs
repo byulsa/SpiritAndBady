@@ -7,6 +7,7 @@ public class RythmManager : MonoBehaviour
 {
     [Header("Rhythm")]
     [SerializeField] private float bpm = 120f;
+    [SerializeField, Min(1f)] private float bpmStep = 10f;
     [SerializeField] private bool playOnStart = true;
     [SerializeField] private float startDelay;
     public const int BeatsPerMeasure = 4;
@@ -21,6 +22,10 @@ public class RythmManager : MonoBehaviour
 
     public event Action<int> OnBeat;
     public event Action<int> OnMeasureStart;
+    public event Action<double, float> OnClockScheduled;
+    public event Action OnClockStopped;
+    public event Action<float, double, int> OnBpmChangeScheduled;
+    public event Action<float, double, int> OnBpmChanged;
 
     public float BPM => currentBpm;
     public float NextMeasureBPM => pendingBpm ?? currentBpm;
@@ -97,6 +102,8 @@ public class RythmManager : MonoBehaviour
         CurrentMeasureStartDspTime = 0d;
         nextBeatDspTime = AudioSettings.dspTime + Mathf.Max(0f, delay);
         IsRunning = true;
+
+        OnClockScheduled?.Invoke(nextBeatDspTime, currentBpm);
     }
 
     public void StopClock(bool clearScheduledActions = false)
@@ -104,6 +111,7 @@ public class RythmManager : MonoBehaviour
         IsRunning = false;
         CurrentBeatIndex = -1;
         CurrentMeasureIndex = -1;
+        OnClockStopped?.Invoke();
 
         if (clearScheduledActions)
         {
@@ -119,7 +127,34 @@ public class RythmManager : MonoBehaviour
             return;
         }
 
-        pendingBpm = newBpm;
+        float quantizedBpm = QuantizeBpm(newBpm);
+
+        if (!IsRunning)
+        {
+            bpm = quantizedBpm;
+            currentBpm = quantizedBpm;
+            pendingBpm = null;
+            return;
+        }
+
+        pendingBpm = quantizedBpm;
+
+        int targetMeasureIndex = CurrentMeasureIndex < 0
+            ? 0
+            : CurrentMeasureIndex + 1;
+        double effectiveDspTime = CurrentMeasureIndex < 0
+            ? nextBeatDspTime
+            : CurrentMeasureStartDspTime + SecondsPerMeasure;
+
+        OnBpmChangeScheduled?.Invoke(
+            quantizedBpm,
+            effectiveDspTime,
+            targetMeasureIndex);
+    }
+
+    public void AddBpmOnNextMeasure(float amount)
+    {
+        ChangeBpmOnNextMeasure(NextMeasureBPM + amount);
     }
 
     public void RunOnNextMeasure(Action action)
@@ -138,13 +173,15 @@ public class RythmManager : MonoBehaviour
 
     public double GetNextMeasureDspTime(float beatPosition)
     {
-        if (!IsRunning || CurrentMeasureIndex < 0)
+        if (!IsRunning)
         {
             return AudioSettings.dspTime;
         }
 
         float nextMeasureBpm = pendingBpm ?? currentBpm;
-        double nextMeasureStart = CurrentMeasureStartDspTime + SecondsPerMeasure;
+        double nextMeasureStart = CurrentMeasureIndex < 0
+            ? nextBeatDspTime
+            : CurrentMeasureStartDspTime + SecondsPerMeasure;
         double nextMeasureSecondsPerBeat = 60d / nextMeasureBpm;
 
         return nextMeasureStart + beatPosition * nextMeasureSecondsPerBeat;
@@ -160,7 +197,7 @@ public class RythmManager : MonoBehaviour
             CurrentMeasureIndex++;
             CurrentMeasureStartDspTime = beatDspTime;
 
-            ApplyPendingBpm();
+            ApplyPendingBpm(beatDspTime);
             ExecuteScheduledActions();
             OnMeasureStart?.Invoke(CurrentMeasureIndex);
         }
@@ -184,7 +221,7 @@ public class RythmManager : MonoBehaviour
         metronomeAudioSource.PlayOneShot(click, metronomeVolume);
     }
 
-    private void ApplyPendingBpm()
+    private void ApplyPendingBpm(double effectiveDspTime)
     {
         if (!pendingBpm.HasValue)
         {
@@ -194,6 +231,11 @@ public class RythmManager : MonoBehaviour
         currentBpm = pendingBpm.Value;
         bpm = currentBpm;
         pendingBpm = null;
+
+        OnBpmChanged?.Invoke(
+            currentBpm,
+            effectiveDspTime,
+            CurrentMeasureIndex);
     }
 
     private void ExecuteScheduledActions()
@@ -219,10 +261,21 @@ public class RythmManager : MonoBehaviour
             bpm = 120f;
         }
 
+        if (bpmStep < 1f)
+        {
+            bpmStep = 10f;
+        }
+
         if (startDelay < 0f)
         {
             startDelay = 0f;
         }
+    }
+
+    private float QuantizeBpm(float value)
+    {
+        float step = Mathf.Max(1f, bpmStep);
+        return Mathf.Max(step, Mathf.Round(value / step) * step);
     }
 
     private readonly struct ScheduledMeasureAction
