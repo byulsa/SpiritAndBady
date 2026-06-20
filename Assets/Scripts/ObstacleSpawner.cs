@@ -18,6 +18,11 @@ public class ObstacleSpawner : MonoBehaviour
     public float minRequiredSpeed = 60f;      // 최저 요구 속도
     public float maxRequiredSpeed = 170f;     // 최고 요구 속도
 
+    [Header("장애물 속도 설정")]
+    public float obstacleSpeedScale = 0.1f;
+
+    public float obstacleYOffset = 0.2f;
+
     private float currentRequiredSpeed;
 
     [SerializeField] private RythmManager rythmManager;
@@ -100,20 +105,23 @@ public class ObstacleSpawner : MonoBehaviour
         if (obstaclePrefabs.Length == 0 || trainTransform == null) return;
 
         float timeToHit = rythmManager.SecondsPerBeat * 2f;
-        float spawnX = trainTransform.position.x + (backgroundLoop.currentSpeed * timeToHit);
-        Vector3 spawnPos = new Vector3(spawnX, trainTransform.position.y, trainTransform.position.z);
+        float spawnX = trainTransform.position.x + (backgroundLoop.currentSpeed * obstacleSpeedScale * timeToHit);
+        Vector3 spawnPos = new Vector3(
+            spawnX,
+            trainTransform.position.y + obstacleYOffset,
+            trainTransform.position.z
+        );
 
         int randomIndex = Random.Range(0, obstaclePrefabs.Length);
         GameObject obj = Instantiate(obstaclePrefabs[randomIndex], spawnPos, Quaternion.identity);
 
         double arrivalDspTime = AudioSettings.dspTime + timeToHit;
 
-        Debug.Log($"장애물 스폰 / timeToHit: {timeToHit:F3}초 / spawnX: {spawnX:F2}");
-
         Obstacle obstacle = obj.GetComponent<Obstacle>();
         if (obstacle != null)
         {
             obstacle.requiredSpeed = currentRequiredSpeed;
+            obstacle.obstacleSpeedScale = obstacleSpeedScale;
             obstacle.Init(this, arrivalDspTime);
         }
     }

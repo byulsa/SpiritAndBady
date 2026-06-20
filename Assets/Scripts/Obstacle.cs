@@ -28,18 +28,16 @@ public class Obstacle : MonoBehaviour
         Debug.Log($"장애물 생성 / 도달 예정 DSP: {arrivalDspTime:F3} / 현재 DSP: {AudioSettings.dspTime:F3}");
     }
 
+    public float obstacleSpeedScale = 0.1f;
     void Update()
     {
         if (!isInitialized || backgroundLoop == null) return;
-
-        transform.Translate(Vector3.left * backgroundLoop.currentSpeed * Time.deltaTime);
-
+        transform.Translate(Vector3.left * backgroundLoop.currentSpeed * obstacleSpeedScale * Time.deltaTime);
         if (!hasJudged && AudioSettings.dspTime >= arrivalDspTime)
         {
             hasJudged = true;
             EvaluateSpeed();
         }
-
         if (transform.position.x < -20f)
             Destroy(gameObject);
     }

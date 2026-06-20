@@ -130,4 +130,14 @@ public class TrainSpeedController : MonoBehaviour
             backgroundLoop.SetSpeed(currentSpeed);
         Debug.Log($"장애물 결과: {(passed ? "통과" : "실패")} / 속도 초기화: {currentSpeed}");
     }
+
+    public void SetSpeedZero()
+    {
+        currentSpeed = 0f;
+        TotalExpectedSpeedGain = 0f;
+        OnSpeedChanged?.Invoke(currentSpeed);
+        if (backgroundLoop != null)
+            backgroundLoop.SetSpeed(0f);
+        Debug.Log("게임 오버 - 속도 0");
+    }
 }

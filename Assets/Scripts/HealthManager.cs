@@ -8,9 +8,11 @@ public class HealthManager : MonoBehaviour
     private int currentHP;
 
     [Header("이펙트")]
-    public GameObject damageEffect;   // 피격 이펙트
-    public AudioClip damageSound;     // 피격 사운드
-    public GameObject gameOverEffect; // 게임오버 이펙트
+    public GameObject damageEffect;
+    public AudioClip damageSound;
+    public GameObject gameOverEffect;
+
+    [SerializeField] private TrainSpeedController trainSpeedController;
 
     private AudioSource audioSource;
 
@@ -30,7 +32,6 @@ public class HealthManager : MonoBehaviour
         OnHPChanged?.Invoke(currentHP);
         Debug.Log($"HP: {currentHP}/{maxHP}");
 
-        // 피격 이펙트
         if (damageEffect != null)
             Instantiate(damageEffect, transform.position, Quaternion.identity);
         if (audioSource != null && damageSound != null)
@@ -41,6 +42,11 @@ public class HealthManager : MonoBehaviour
             Debug.Log("게임 오버");
             if (gameOverEffect != null)
                 Instantiate(gameOverEffect, transform.position, Quaternion.identity);
+
+            // 속도 0으로
+            if (trainSpeedController != null)
+                trainSpeedController.SetSpeedZero();
+
             OnDead?.Invoke();
         }
     }
