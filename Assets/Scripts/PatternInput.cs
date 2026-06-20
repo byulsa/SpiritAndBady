@@ -9,6 +9,7 @@ public class PatternInput : MonoBehaviour
     [SerializeField] private NoteGenerator noteGenerator;
     [FormerlySerializedAs("Generator")]
     [SerializeField] private MeasureGenerator measureGenerator;
+    [SerializeField] private TutorialManager TutorialManager;
 
     [Header("UI")]
     [SerializeField] private GameObject InputGuidePanel;
@@ -37,12 +38,19 @@ public class PatternInput : MonoBehaviour
         {
             inputAudioSource = GetComponent<AudioSource>();
         }
+        if (TutorialManager == null)
+        {
+            TutorialManager = FindAnyObjectByType<TutorialManager>();
+        }
     }
-
     private void OnEnable()
     {
         FindDependencies();
         SubscribeToRythmManager();
+        if (TutorialManager)
+        {
+            TutorialManager.OnTutorialEnd += ReserveStart;
+        }
     }
     private void Active(bool bActive)
     {
@@ -51,20 +59,14 @@ public class PatternInput : MonoBehaviour
             InputGuidePanel.SetActive(bActive);
         }
     }
-
-    private void Start()
+    private void ReserveStart()
     {
-        if (!beginOnStart)
+        TutorialManager.OnTutorialEnd -= ReserveStart;
+        if (rythmManager)
         {
-            return;
+            rythmManager.RunOnNextMeasure(BeginSelection);
         }
-        if (!HasRequiredDependencies())
-        {
-            return;
-        }
-        rythmManager.RunOnNextMeasure(BeginSelection);
     }
-
     private void OnDisable()
     {
         if (rythmManager != null && isSubscribed)
@@ -73,7 +75,6 @@ public class PatternInput : MonoBehaviour
             isSubscribed = false;
         }
     }
-
     private void Update()
     {
         if (!IsSelecting)
@@ -119,7 +120,7 @@ public class PatternInput : MonoBehaviour
         SelectionEndMeasureIndex =
             rythmManager.CurrentMeasureIndex + Mathf.Max(1, selectionMeasureCount);
         IsSelecting = true;
-        
+
         Debug.Log(
             $"Pattern selection started. Deadline: measure " +
             $"{SelectionEndMeasureIndex + 1}");

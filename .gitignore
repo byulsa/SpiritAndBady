@@ -104,3 +104,6 @@ InitTestScene*.unity*
 
 # Auto-generated cache in Assets folder
 /[Aa]ssets/[Ss]ceneDependencyCache*
+
+# Large model distributed separately; keep its .meta file tracked for Unity references.
+/Assets/Model/2line/2Line all.fbx

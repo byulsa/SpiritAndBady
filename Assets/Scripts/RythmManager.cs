@@ -14,6 +14,10 @@ public class RythmManager : MonoBehaviour
 
     [Header("Test Metronome")]
     [SerializeField] private bool playMetronome;
+    public void TurnOffMetronome()
+    {
+        playMetronome = false;
+    }
     [SerializeField] private AudioSource metronomeAudioSource;
     [SerializeField] private AudioClip metronomeClick;
     [Tooltip("Optional click sound for the first beat of each measure.")]
@@ -81,20 +85,18 @@ public class RythmManager : MonoBehaviour
         }
 
         double now = AudioSettings.dspTime;
-
         while (now >= nextBeatDspTime)
         {
             ProcessBeat(nextBeatDspTime);
         }
     }
 
-    public void StartClock(float delay = 0f)
+    public void StartClock(float delay = 1f)
     {
         if (IsRunning)
         {
             return;
         }
-
         currentBpm = bpm;
         pendingBpm = null;
         CurrentBeatIndex = BeatsPerMeasure - 1;
