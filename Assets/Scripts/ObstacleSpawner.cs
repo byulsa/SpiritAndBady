@@ -46,12 +46,17 @@ public class ObstacleSpawner : MonoBehaviour
     }
 
     public void OnRhythmSectionComplete()
-{
-    if (rythmManager != null)
     {
-        rythmManager.RunOnNextMeasure(SpawnObstacle);
+        if (rythmManager != null)
+        {
+            rythmManager.RunOnNextMeasure(() =>
+            {
+                double spawnDspTime = rythmManager.GetNextMeasureDspTime(2f);
+                double delay = spawnDspTime - AudioSettings.dspTime;
+                StartCoroutine(SpawnAfterDelay((float)delay));
+            });
+        }
     }
-}
     // public void OnRhythmSectionComplete()
     // {
     //     StartCoroutine(SpawnAfterDelay(GetBarDuration()));
@@ -89,6 +94,10 @@ public class ObstacleSpawner : MonoBehaviour
 
         Obstacle obstacle = obj.GetComponent<Obstacle>();
         if (obstacle != null)
-            obstacle.Init(this);
+        {
+            // 3번째 박자 = beatPosition 2f
+            double arrivalDspTime = rythmManager.GetNextMeasureDspTime(2f);
+            obstacle.Init(this, spawnPoint.position, arrivalDspTime);
+        }
     }
 }
