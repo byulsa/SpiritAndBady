@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Obstacle : MonoBehaviour
 {
-    [Header("ï¿½ï¿½Ö¹ï¿½ ï¿½ï¿½ï¿½ï¿½")]
+    [Header("ÃÖ´ë ¼Óµµ")]
     public float requiredSpeed = 50f;
 
     private BackgroundLoop backgroundLoop;
@@ -18,17 +18,9 @@ public class Obstacle : MonoBehaviour
         speedController = Object.FindAnyObjectByType<TrainSpeedController>();
     }
 
-    public void Init(ObstacleSpawner obstacleSpawner, Vector3 trainPosition, double arrivalDspTime)
+    public void Init(ObstacleSpawner obstacleSpawner)
     {
         spawner = obstacleSpawner;
-        targetPosition = trainPosition;
-        arriveTime = arrivalDspTime;
-        isInitialized = true;
-
-        // ¼Óµµ ±â¹ÝÀ¸·Î ½ºÆù À§Ä¡ ¿ª»ê
-        float timeToArrive = (float)(arrivalDspTime - AudioSettings.dspTime);
-        float spawnOffsetX = backgroundLoop != null ? backgroundLoop.currentSpeed * timeToArrive : 9f;
-        transform.position = new Vector3(targetPosition.x + spawnOffsetX, transform.position.y, transform.position.z);
     }
 
     void Update()
