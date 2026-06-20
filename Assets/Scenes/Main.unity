@@ -638,10 +638,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MatControll
   irisMaterial: {fileID: 2100000, guid: 58148d5e5d77e4ed7ab69756dab91b27, type: 2}
-  hitRadius: 0.2
+  hitRadius: 0.1
   normalRadius: 1
   shrinkTime: 0.05
-  recoverTime: 0.3
+  recoverTime: 4
 --- !u!1001 &297995294
 PrefabInstance:
   m_ObjectHideFlags: 0
