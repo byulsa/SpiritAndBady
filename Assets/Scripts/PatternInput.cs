@@ -23,6 +23,7 @@ public class PatternInput : MonoBehaviour
     [SerializeField] private int selectionMeasureCount = 2;
     [SerializeField] private bool beginOnStart = true;
 
+    public event Action OnSelectionStarted;
     public event Action OnSelectionTimedOut;
     public event Action<int, int> OnMeasureSelected;
     private int Counter = 0;
@@ -97,6 +98,8 @@ public class PatternInput : MonoBehaviour
 
     public void BeginSelection()
     {
+        OnSelectionStarted?.Invoke();
+
         Active(true);
 
         FindDependencies();
