@@ -98,6 +98,7 @@ public class TrainSpeedController : MonoBehaviour
     {
         currentSpeed += TotalExpectedSpeedGain;
         TotalExpectedSpeedGain = 0;
+        OnExpectedSpeedGainChanged?.Invoke(TotalExpectedSpeedGain);
         OnSpeedChanged?.Invoke(currentSpeed);
         if (backgroundLoop != null)
             backgroundLoop.SetSpeed(currentSpeed);
