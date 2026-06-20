@@ -39,6 +39,7 @@ public class Judgement : MonoBehaviour
     [Header("Judgement Text FX")]
     public float fxRiseAmount = 0.05f;
     public float fxDuration = 0.2f;
+    public Animator PlayerinputAnim;
 
     [Header("Judgement Sound")]
     public AudioSource audioSource;
@@ -86,8 +87,10 @@ public class Judgement : MonoBehaviour
     public void JudgeCurrentNote()
     {
         Transform note = GetCurrentNote();
+        PlayerinputAnim.SetTrigger("Trigger");
         if (note == null) return;
         if (!CanJudge(note)) return;
+
 
         ResolveNote(note, Judge(note));
     }
