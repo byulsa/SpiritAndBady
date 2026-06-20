@@ -30,7 +30,7 @@ public class NoteGenerator : MonoBehaviour
     private bool isSubscribed;
 
     public event Action OnWaveFinished;
-    public event Action<int> OnWaveMeasureStarted;
+    public event Action<int, MeasureData> OnWaveMeasureStarted;
     private void OnEnable()
     {
         FindRythmManager();
@@ -86,7 +86,7 @@ public class NoteGenerator : MonoBehaviour
         isWavePlaying = true;
 
         BuildCurrentMeasureTimings();
-        OnWaveMeasureStarted?.Invoke(0);
+        OnWaveMeasureStarted?.Invoke(0, currentWave[0]);
         
         GenerateDueNotes((float)rythmManager.CurrentMeasureElapsedTime);
 
@@ -122,7 +122,7 @@ public class NoteGenerator : MonoBehaviour
             phase = WavePhase.Guide;
             BuildCurrentMeasureTimings();
 
-            OnWaveMeasureStarted?.Invoke(currentWaveMeasureIndex);
+            OnWaveMeasureStarted?.Invoke(currentWaveMeasureIndex, currentWave[currentWaveMeasureIndex]);
             GenerateDueNotes(0f);
             Debug.Log($"Guide Start: measure {currentWaveMeasureIndex + 1}");
             return;

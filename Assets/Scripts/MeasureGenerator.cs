@@ -77,7 +77,7 @@ public class MeasureGenerator : MonoBehaviour
         generationBpm = rythmManager.NextMeasureBPM;
         bool isFinalMeasure = nextMeasureIndex == MeasureCount - 1;
         BeatData[] beats = GenerateMeasureBeats(safeDifficulty, isFinalMeasure);
-        MeasureData measure = CreateMeasureData(beats, nextMeasureIndex);
+        MeasureData measure = CreateMeasureData(beats, nextMeasureIndex, safeDifficulty);
 
         GeneratedMeasures[nextMeasureIndex] = measure;
         nextMeasureIndex++;
@@ -300,9 +300,10 @@ public class MeasureGenerator : MonoBehaviour
         return beats;
     }
 
-    private static MeasureData CreateMeasureData(BeatData[] beats, int index)
+    private static MeasureData CreateMeasureData(BeatData[] beats, int index, int difficulty)
     {
         MeasureData measure = ScriptableObject.CreateInstance<MeasureData>();
+        measure.difficulty = (MeasureData.EDifficulty)difficulty;
         measure.name = $"Generated Measure {index + 1}";
         measure.hideFlags = HideFlags.DontSave;
         measure.beats = beats;

@@ -3,6 +3,8 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "MeasureData", menuName = "Rhythm/Measure Data")]
 public class MeasureData : ScriptableObject
 {
+    public enum EDifficulty { Easy, Noraml, Hard}
+    public EDifficulty difficulty;
     public BeatData[] beats = new BeatData[4];
     private const int BeatsPerMeasure = 4;
     private void OnValidate()

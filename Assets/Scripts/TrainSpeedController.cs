@@ -18,9 +18,18 @@ public class TrainSpeedController : MonoBehaviour
     private int totalNotes = 0;          // ���� ���� ��ü ��Ʈ ��
     private int hitNotes = 0;            // ���� ���� �ϼ� ��Ʈ �� (Perfect + Good)
 
-    private BackgroundLoop backgroundLoop;
-    private Judgement judgement;
+    [Header("Components Reference")]
+    [SerializeField] private NoteGenerator NoteGenerator;
+    [SerializeField] private BackgroundLoop backgroundLoop;
+    [SerializeField] private Judgement judgement;
 
+    private void Awake()
+    {
+        if(backgroundLoop == null)
+        {
+            // ndLoop = Object.FindAnyObjectByType<BackgroundLoop>();
+        }
+    }
     void Start()
     {
         backgroundLoop = Object.FindAnyObjectByType<BackgroundLoop>();

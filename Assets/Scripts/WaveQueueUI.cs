@@ -26,7 +26,7 @@ public class WaveQueueUI : MonoBehaviour
         }
         Slots[SlotIndex].SetSlot(Difficulty);
     }
-    private void OnWaveMeasureStarted(int index)
+    private void OnWaveMeasureStarted(int index, MeasureData _)
     {
         for (int i = 0; i < Slots.Length - 1 - index; i++)
         {
