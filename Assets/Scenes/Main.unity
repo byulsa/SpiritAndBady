@@ -2089,6 +2089,7 @@ MonoBehaviour:
   damageEffect: {fileID: 0}
   damageSound: {fileID: 0}
   gameOverEffect: {fileID: 0}
+  trainSpeedController: {fileID: 2065287077}
 --- !u!1 &703005770
 GameObject:
   m_ObjectHideFlags: 0
@@ -2144,6 +2145,8 @@ MonoBehaviour:
   failDecrease: 10
   minRequiredSpeed: 60
   maxRequiredSpeed: 170
+  obstacleSpeedScale: 0.1
+  obstacleYOffset: 0.2
   rythmManager: {fileID: 2091660994}
   noteGenerator: {fileID: 1347530142}
   Input: {fileID: 2054379976}
