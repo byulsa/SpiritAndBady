@@ -2322,6 +2322,7 @@ MonoBehaviour:
   damageSound: {fileID: 0}
   gameOverEffect: {fileID: 0}
   trainSpeedController: {fileID: 2065287077}
+  backgroundLoop: {fileID: 514417092}
 --- !u!1 &703005770
 GameObject:
   m_ObjectHideFlags: 0
@@ -2372,10 +2373,10 @@ MonoBehaviour:
   spawnPoint: {fileID: 1430660511}
   isTestMode: 0
   testSpawnKey: 32
-  initialRequiredSpeed: 60
+  initialRequiredSpeed: 70
   successIncrease: 10
   failDecrease: 10
-  minRequiredSpeed: 60
+  minRequiredSpeed: 70
   maxRequiredSpeed: 170
   obstacleSpeedScale: 0.1
   obstacleYOffset: 0.2

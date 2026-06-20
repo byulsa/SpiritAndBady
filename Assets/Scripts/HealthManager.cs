@@ -13,6 +13,7 @@ public class HealthManager : MonoBehaviour
     public GameObject gameOverEffect;
 
     [SerializeField] private TrainSpeedController trainSpeedController;
+    [SerializeField] private BackgroundLoop backgroundLoop;
 
     private AudioSource audioSource;
 
@@ -38,17 +39,30 @@ public class HealthManager : MonoBehaviour
             audioSource.PlayOneShot(damageSound);
 
         if (currentHP <= 0)
-        {
-            Debug.Log("게임 오버");
-            if (gameOverEffect != null)
-                Instantiate(gameOverEffect, transform.position, Quaternion.identity);
+            GameOver();
+    }
 
-            // 속도 0으로
-            if (trainSpeedController != null)
-                trainSpeedController.SetSpeedZero();
+    private void GameOver()
+    {
+        Debug.Log("게임 오버");
 
-            OnDead?.Invoke();
-        }
+        if (gameOverEffect != null)
+            Instantiate(gameOverEffect, transform.position, Quaternion.identity);
+
+        if (trainSpeedController != null)
+            trainSpeedController.SetSpeedZero();
+
+        // 속도 0 될 때 멈추도록 구독
+        if (backgroundLoop != null)
+            backgroundLoop.OnSpeedReachedZero += OnSpeedReachedZero;
+
+        OnDead?.Invoke();
+    }
+
+    private void OnSpeedReachedZero()
+    {
+        Time.timeScale = 0f;
+        Debug.Log("속도 0 - 게임 정지");
     }
 
     public int GetCurrentHP() => currentHP;
