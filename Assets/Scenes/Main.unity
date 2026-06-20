@@ -4349,7 +4349,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b5c59c693e434e44a75e7d0539a7f08, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RythmManager
-  bpm: 60
+  bpm: 240
   playOnStart: 1
   startDelay: 1.5
   playMetronome: 1

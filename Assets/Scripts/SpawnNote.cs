@@ -20,7 +20,7 @@ public class SpawnNote : MonoBehaviour
         {
             currentTime = 0;
             GameObject Note = Instantiate(prefabObject, transform.position, Quaternion.identity);
-            judgement.notes.Add(Note.transform);
+            //judgement.notes.Add(Note.transform);
         }
     }
 }

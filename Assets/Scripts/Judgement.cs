@@ -12,48 +12,70 @@ public enum JudgeType
 public class Judgement : MonoBehaviour
 {
     public event Action<JudgeType> OnJudged;
-    public JudgeType judgeType = JudgeType.Perfect;
 
     [Header("Judge Line")]
     public Transform judgeLine;
 
-    public List<Transform> notes = new();
-
     [Header("Judge Range")]
     public float perfectRange = 0.1f;
     public float goodRange = 0.25f;
+    public float missRange = 0.5f;
+
+    public JudgeType judgeType = JudgeType.Perfect;
+
+    private readonly List<Transform> notes = new();
 
     private void Update()
     {
+        CheckMiss();
+
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            JudgeClosestNote();
-        }
-
-        for (int i = notes.Count - 1; i >= 0; i--)
-        {
-            Transform note = notes[i];
-            if (note == null)
-            {
-                notes.RemoveAt(i);
-                continue;
-            }
-
-            TimedNoteMover mover = note.GetComponent<TimedNoteMover>();
-            if (mover != null && mover.HasPassedJudgementPoint(goodRange))
-            {
-                ResolveNote(note, JudgeType.Miss);
-            }
+            JudgeCurrentNote();
         }
     }
+
     public void RegisterNote(Transform note)
     {
-        if (note != null && !notes.Contains(note))
+        if (note != null)
         {
             notes.Add(note);
         }
     }
-    public float missRange = 0.5f;
+
+    private void CheckMiss()
+    {
+        Transform note = GetCurrentNote();
+
+        if (note == null)
+        {
+            return;
+        }
+
+        TimedNoteMover mover = note.GetComponent<TimedNoteMover>();
+
+        if (mover != null && mover.HasPassedJudgementPoint(goodRange))
+        {
+            ResolveNote(note, JudgeType.Miss);
+        }
+    }
+
+    public void JudgeCurrentNote()
+    {
+        Transform note = GetCurrentNote();
+
+        if (note == null)
+        {
+            return;
+        }
+
+        if (!CanJudge(note))
+        {
+            return;
+        }
+
+        ResolveNote(note, Judge(note));
+    }
 
     public JudgeType Judge(Transform note)
     {
@@ -63,6 +85,7 @@ public class Judgement : MonoBehaviour
         }
 
         float distance = Mathf.Abs(note.position.x - judgeLine.position.x);
+
         if (distance <= perfectRange)
         {
             return JudgeType.Perfect;
@@ -72,67 +95,53 @@ public class Judgement : MonoBehaviour
         {
             return JudgeType.Good;
         }
-        if (distance <= missRange)
-        {
-            return JudgeType.Miss;
-        }
 
-        // 판정 범위를 벗어났음
         return JudgeType.Miss;
-    }
-
-    public void JudgeClosestNote()
-    {
-        Transform note = GetClosestNote();
-        if (note == null)
-        {
-            return;
-        }
-        ResolveNote(note, Judge(note));
     }
 
     public void ResolveNote(Transform note, JudgeType result)
     {
         judgeType = result;
-        
+
         OnJudged?.Invoke(result);
 
         if (note == null)
         {
             return;
         }
-        notes.Remove(note);
+
+        notes.RemoveAt(0);
+
         Destroy(note.gameObject);
-        Debug.Log($"Judgement: {result}");
+
+        Debug.Log($"Judgement : {result}");
     }
 
     public bool CanJudge(Transform note)
     {
+        if (note == null)
+        {
+            return false;
+        }
+
         float distance = Mathf.Abs(note.position.x - judgeLine.position.x);
+
         return distance <= missRange;
     }
 
-    public Transform GetClosestNote()
+    private Transform GetCurrentNote()
     {
-        Transform closestNote = null;
-        float minDistance = Mathf.Infinity;
-
-        foreach (Transform note in notes)
+        while (notes.Count > 0 && notes[0] == null)
         {
-            if (note == null)
-            {
-                continue;
-            }
-
-            float distance = Mathf.Abs(note.position.x - judgeLine.position.x);
-
-            if (distance < minDistance)
-            {
-                minDistance = distance;
-                closestNote = note;
-            }
+            notes.RemoveAt(0);
         }
-        return closestNote;
+
+        if (notes.Count == 0)
+        {
+            return null;
+        }
+
+        return notes[0];
     }
 
     private void OnDrawGizmos()
@@ -143,8 +152,6 @@ public class Judgement : MonoBehaviour
         }
 
         Vector3 center = judgeLine.position;
-
-        // 높이(세로 길이)
         float height = 1f;
 
         // Perfect
