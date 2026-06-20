@@ -24,7 +24,21 @@ public class Judgement : MonoBehaviour
     public JudgeType judgeType = JudgeType.Perfect;
 
     private readonly List<Transform> notes = new();
+
+    [Header("Judgement Sound")]
     public AudioSource audioSource;
+    [SerializeField] private AudioClip perfectSound;
+    [SerializeField] private AudioClip goodSound;
+    [SerializeField] private AudioClip failSound;
+    [SerializeField, Range(0f, 1f)] private float judgementSoundVolume = 1f;
+
+    private void Awake()
+    {
+        if (audioSource == null)
+        {
+            audioSource = GetComponent<AudioSource>();
+        }
+    }
 
     private void Update()
     {
@@ -105,6 +119,7 @@ public class Judgement : MonoBehaviour
         judgeType = result;
 
         OnJudged?.Invoke(result);
+        PlayJudgementSound(result);
 
         if (note == null)
         {
@@ -114,8 +129,28 @@ public class Judgement : MonoBehaviour
         notes.RemoveAt(0);
 
         Destroy(note.gameObject);
-        audioSource.Play();
         Debug.Log($"Judgement : {result}");
+    }
+
+    private void PlayJudgementSound(JudgeType result)
+    {
+        if (audioSource == null)
+        {
+            return;
+        }
+
+        AudioClip clip = result switch
+        {
+            JudgeType.Perfect => perfectSound,
+            JudgeType.Good => goodSound,
+            JudgeType.Miss => failSound,
+            _ => null
+        };
+
+        if (clip != null)
+        {
+            audioSource.PlayOneShot(clip, judgementSoundVolume);
+        }
     }
 
     public bool CanJudge(Transform note)
