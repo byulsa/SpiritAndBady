@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class HealthManager : MonoBehaviour
 {
@@ -25,6 +26,18 @@ public class HealthManager : MonoBehaviour
         currentHP = maxHP;
         audioSource = GetComponent<AudioSource>();
         OnHPChanged?.Invoke(currentHP);
+    }
+
+    private void Update()
+    {
+        if (Time.timeScale == 0f && Input.GetKeyDown(KeyCode.R))
+            Restart();
+    }
+
+    public void Restart()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     public void TakeDamage()
