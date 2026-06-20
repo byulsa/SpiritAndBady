@@ -29,9 +29,8 @@ public class ExpectedSpeedGainUI : MonoBehaviour
             Controller.OnExpectedSpeedGainChanged -= HandlOnExpectedSpeedGainChangede;
         }
     }
-
     private void HandlOnExpectedSpeedGainChangede(float Value)
     {
-        text.text = Value.ToString("F2") + " Km/h";
+        text.text = "+" + Value.ToString("F2") + " Km/h";
     }
 }

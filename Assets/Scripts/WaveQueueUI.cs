@@ -5,17 +5,40 @@ public class WaveQueueUI : MonoBehaviour
     [SerializeField] private QueueSlot[] Slots;
     [SerializeField] private PatternInput PlayerInput;
     [SerializeField] private NoteGenerator NoteGenerator;
+    void Awake()
+    {
+        if (PlayerInput == null)
+        {
+            PlayerInput = FindAnyObjectByType<PatternInput>();
+        }
+        if (NoteGenerator == null)
+        {
+            NoteGenerator = FindAnyObjectByType<NoteGenerator>();
+        }
+    }
     private void OnEnable()
     {
-        PlayerInput.OnSelectionTimedOut += Clear;
-        PlayerInput.OnMeasureSelected += OnMeasureSelected;
-        NoteGenerator.OnMeasureStarted += OnWaveMeasureStarted;
+        if (PlayerInput)
+        {
+            PlayerInput.OnSelectionTimedOut += Clear;
+            PlayerInput.OnMeasureSelected += OnMeasureSelected;
+        }
+        if (NoteGenerator)
+        {
+            NoteGenerator.OnMeasureStarted += OnWaveMeasureStarted;
+        }
     }
     private void OnDisable()
     {
-        PlayerInput.OnSelectionTimedOut -= Clear;
-        PlayerInput.OnMeasureSelected -= OnMeasureSelected;
-        NoteGenerator.OnMeasureStarted -= OnWaveMeasureStarted;
+        if (PlayerInput)
+        {
+            PlayerInput.OnSelectionTimedOut -= Clear;
+            PlayerInput.OnMeasureSelected -= OnMeasureSelected;
+        }
+        if (NoteGenerator)
+        {
+            NoteGenerator.OnMeasureStarted -= OnWaveMeasureStarted;
+        }
     }
     private void OnMeasureSelected(int SlotIndex, int Difficulty)
     {

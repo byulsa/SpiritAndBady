@@ -31,7 +31,6 @@ public class PatternInput : MonoBehaviour
     {
         FindDependencies();
         SubscribeToRythmManager();
-        Active(true);
     }
     private void Active(bool bActive)
     {
@@ -51,12 +50,10 @@ public class PatternInput : MonoBehaviour
         {
             return;
         }
-
         if (!HasRequiredDependencies())
         {
             return;
         }
-
         rythmManager.RunOnNextMeasure(BeginSelection);
     }
 
@@ -91,7 +88,7 @@ public class PatternInput : MonoBehaviour
 
     public void BeginSelection()
     {
-        enabled = true;
+        Active(true);
 
         FindDependencies();
         SubscribeToRythmManager();
@@ -140,8 +137,6 @@ public class PatternInput : MonoBehaviour
         Debug.Log("Pattern selection complete. Wave queued for the next measure.");
 
         Active(false);
-
-        enabled = false;
     }
 
     private void HandleMeasureStart(int measureIndex)
