@@ -21,6 +21,7 @@ public class Obstacle : MonoBehaviour
     public void Init(ObstacleSpawner obstacleSpawner)
     {
         spawner = obstacleSpawner;
+        isInitialized = true;
     }
 
     void Update()

@@ -601,7 +601,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BackgroundLoop
   maxSpeed: 50
-  isTestMode: 1
+  isTestMode: 0
   speedUpKey: 275
   speedDownKey: 276
   currentSpeed: 0
@@ -1141,6 +1141,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 436424262}
+  - component: {fileID: 436424263}
   m_Layer: 0
   m_Name: Obstacle Spawn Position
   m_TagString: Untagged
@@ -1163,6 +1164,28 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2091660997}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &436424263
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 436424261}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4df4f0d66cdaff64a87e51b16d6abb73, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ObstacleSpawner
+  obstaclePrefabs:
+  - {fileID: 836772444561234050, guid: 62c07bf4f02daa24da800776b35f4cf7, type: 3}
+  spawnPoint: {fileID: 1535769379}
+  isTestMode: 0
+  testSpawnKey: 32
+  rythmManager: {fileID: 2091660994}
+  noteGenerator: {fileID: 2091660996}
+  Input: {fileID: 0}
+  backgroundLoop: {fileID: 338482667}
+  trainTransform: {fileID: 1366218418}
 --- !u!1 &440597202
 GameObject:
   m_ObjectHideFlags: 0
@@ -4527,6 +4550,8 @@ MonoBehaviour:
   rythmManager: {fileID: 2091660994}
   noteGenerator: {fileID: 2091660996}
   Input: {fileID: 1443290742}
+  backgroundLoop: {fileID: 0}
+  trainTransform: {fileID: 0}
 --- !u!1001 &2744845822595469217
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -72,6 +72,8 @@ public class TrainSpeedController : MonoBehaviour
         currentSpeed += TotalExpectedSpeedGain;
         TotalExpectedSpeedGain = 0;
         OnSpeedChanged?.Invoke(currentSpeed);
+        if (backgroundLoop != null)
+            backgroundLoop.SetSpeed(currentSpeed);
     }
     private void OnWaveStarted(MeasureData[] datas)
     {

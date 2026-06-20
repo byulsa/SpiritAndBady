@@ -163,9 +163,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23847c4ecef7a594cb3b717136c6206f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TrainSpeedController
-  easySpeed: 10
-  normalSpeed: 20
-  hardSpeed: 30
+  DifficultySpeed:
+  - 10
+  - 20
+  - 30
+  maxSpeed: 1000
+  initialSpeed: 60
+  currentSpeed: 0
   NoteGenerator: {fileID: 1869601509}
   backgroundLoop: {fileID: 1682535912}
   judgement: {fileID: 469961704}
@@ -1054,6 +1058,7 @@ MonoBehaviour:
   notes: []
   perfectRange: 0.25
   goodRange: 0.5
+  missRange: 0.5
 --- !u!114 &469961705
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1440,7 +1445,9 @@ MonoBehaviour:
   testSpawnKey: 32
   rythmManager: {fileID: 1869601512}
   noteGenerator: {fileID: 1869601509}
-  Input: {fileID: 469961705}
+  patternInput: {fileID: 469961705}
+  backgroundLoop: {fileID: 1682535912}
+  trainTransform: {fileID: 418732815}
 --- !u!1 &941464365
 GameObject:
   m_ObjectHideFlags: 0
@@ -3347,7 +3354,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BackgroundLoop
   maxSpeed: 50
-  isTestMode: 1
+  isTestMode: 0
   speedUpKey: 275
   speedDownKey: 276
   currentSpeed: 0

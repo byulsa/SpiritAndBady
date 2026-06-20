@@ -14,29 +14,23 @@ public class ObstacleSpawner : MonoBehaviour
     [SerializeField] private RythmManager rythmManager;
     [SerializeField] private NoteGenerator noteGenerator;
     [SerializeField] private PatternInput Input;
+    [SerializeField] private BackgroundLoop backgroundLoop;
+    [SerializeField] private Transform trainTransform;
 
-    private void OnEnable()
+    private void Start()
     {
         if (noteGenerator != null)
-        {
             noteGenerator.OnWaveFinished += OnRhythmSectionComplete;
-        }
         if (Input != null)
-        {
             Input.OnSelectionTimedOut += OnRhythmSectionComplete;
-        }
     }
 
-    private void OnDisable()
+    private void OnDestroy()
     {
         if (noteGenerator != null)
-        {
             noteGenerator.OnWaveFinished -= OnRhythmSectionComplete;
-        }
         if (Input != null)
-        {
             Input.OnSelectionTimedOut -= OnRhythmSectionComplete;
-        }
     }
 
     void Update()
@@ -49,12 +43,8 @@ public class ObstacleSpawner : MonoBehaviour
     {
         if (rythmManager != null)
         {
-            rythmManager.RunOnNextMeasure(() =>
-            {
-                double spawnDspTime = rythmManager.GetNextMeasureDspTime(2f);
-                double delay = spawnDspTime - AudioSettings.dspTime;
-                StartCoroutine(SpawnAfterDelay((float)delay));
-            });
+            if (rythmManager != null)
+                rythmManager.RunOnNextMeasure(SpawnObstacle);
         }
     }
     // public void OnRhythmSectionComplete()
@@ -87,18 +77,17 @@ public class ObstacleSpawner : MonoBehaviour
 
     void SpawnObstacle()
     {
-        if (obstaclePrefabs.Length == 0 || spawnPoint == null) return;
+        if (obstaclePrefabs.Length == 0 || trainTransform == null) return;
+
+        float timeToHit = rythmManager.SecondsPerBeat * 2f;
+        float spawnX = trainTransform.position.x + (backgroundLoop.currentSpeed * timeToHit);
+        Vector3 spawnPos = new Vector3(spawnX, trainTransform.position.y, trainTransform.position.z);
 
         int randomIndex = Random.Range(0, obstaclePrefabs.Length);
-        GameObject obj = Instantiate(obstaclePrefabs[randomIndex], spawnPoint.position, Quaternion.identity);
+        GameObject obj = Instantiate(obstaclePrefabs[randomIndex], spawnPos, Quaternion.identity);
 
         Obstacle obstacle = obj.GetComponent<Obstacle>();
         if (obstacle != null)
-        {
-            // 3번째 박자 = beatPosition 2f
-            double arrivalDspTime = rythmManager.GetNextMeasureDspTime(2f);
-            obstacle.Init(this);//spawnPoint.position, arrivalDspTime
-
-        }
+            obstacle.Init(this);
     }
 }
