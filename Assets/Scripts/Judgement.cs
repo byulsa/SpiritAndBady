@@ -124,7 +124,7 @@ public class Judgement : MonoBehaviour
         if (result == JudgeType.Perfect)
         {
             cameraMoving.Zoom(13f, 0.25f);
-            ExFire.Play();
+
         }
         if (result != JudgeType.Miss)
         {
@@ -138,12 +138,7 @@ public class Judgement : MonoBehaviour
             if (note.TryGetComponent(out ParabolaMover parabolaMover) &&
                 FirePosition != null)
             {
-                StartCoroutine(parabolaMover.Move(
-                    note.position,
-                    FirePosition.position,
-                    Vector3.up,
-                    1f,
-                    1f));
+                StartCoroutine(parabolaMover.Move(note.position, FirePosition.position, Vector3.up, 1f, 1f, this));
             }
             else
             {
@@ -154,6 +149,10 @@ public class Judgement : MonoBehaviour
         }
         Destroy(note.gameObject);
         Debug.Log($"Judgement : {result}");
+    }
+    public void ExFireEx()
+    {
+        ExFire.Play();
     }
 
     IEnumerator HideOriginalText()

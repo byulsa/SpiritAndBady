@@ -8,7 +8,7 @@ public class ParabolaMover : MonoBehaviour
         Vector3 end,
         Vector3 bulgeDirection,
         float height,
-        float duration)
+        float duration, Judgement judgement)
     {
         Vector3 middle = (start + end) * 0.5f;
         Vector3 control = middle + bulgeDirection.normalized * height;
@@ -28,6 +28,7 @@ public class ParabolaMover : MonoBehaviour
         }
 
         transform.position = end;
+        judgement.ExFireEx();
         Destroy(gameObject);
     }
 
