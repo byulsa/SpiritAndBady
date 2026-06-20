@@ -145,12 +145,12 @@ public class Judgement : MonoBehaviour
             }
             else
             {
-                Destroy(note.gameObject);
+                PooledNote.ReturnOrDestroy(note.gameObject);
             }
 
             return;
         }
-        Destroy(note.gameObject);
+        PooledNote.ReturnOrDestroy(note.gameObject);
         Debug.Log($"Judgement : {result}");
     }
     public void ExFireEx()

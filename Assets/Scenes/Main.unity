@@ -4985,7 +4985,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ObstacleSpawner
   obstaclePrefabs:
   - {fileID: 643912063756001946, guid: 4c1191d54a0aa4730a73332dba5040cb, type: 3}
-  initialRequiredSpeed: 60
+  initialRequiredSpeed: 80
   successIncrease: 10
   failDecrease: 10
   minRequiredSpeed: 60
@@ -5485,7 +5485,6 @@ MonoBehaviour:
   - {fileID: 908068829}
   - {fileID: 1905398789}
   - {fileID: 1987227236}
-  - {fileID: 0}
   - {fileID: 528701145}
   startPosition: {fileID: 1737009538}
   endPosition: {fileID: 1800450379}
@@ -12524,7 +12523,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
-  m_Material: {fileID: 2100000, guid: 58148d5e5d77e4ed7ab69756dab91b27, type: 2}
+  m_Material: {fileID: 2100000, guid: c9ddcd7566f3afb46b8b34e95fccb74e, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -12562,11 +12561,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69de3233f59da4b03b2ad44af15e78cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  irisMaterial: {fileID: 2100000, guid: 58148d5e5d77e4ed7ab69756dab91b27, type: 2}
+  irisMaterial: {fileID: 2100000, guid: c9ddcd7566f3afb46b8b34e95fccb74e, type: 2}
   healthManager: {fileID: 646556704}
   openRadius: 1
   closedRadius: 0
-  closeDuration: 1.5
+  closeDuration: 3.5
 --- !u!1 &1920808323
 GameObject:
   m_ObjectHideFlags: 0
@@ -18599,81 +18598,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1999715177}
   m_CullTransparentMesh: 1
---- !u!1 &2010408912
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2010408913}
-  - component: {fileID: 2010408915}
-  - component: {fileID: 2010408914}
-  m_Layer: 5
-  m_Name: Panel (1)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!224 &2010408913
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2010408912}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2089457405}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &2010408914
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2010408912}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
-  m_Material: {fileID: 2100000, guid: c9ddcd7566f3afb46b8b34e95fccb74e, type: 2}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
---- !u!222 &2010408915
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2010408912}
-  m_CullTransparentMesh: 1
 --- !u!1001 &2015583490
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -20086,7 +20010,6 @@ RectTransform:
   - {fileID: 104603821}
   - {fileID: 513562391}
   - {fileID: 241729792}
-  - {fileID: 2010408913}
   - {fileID: 813135503}
   - {fileID: 1910179692}
   - {fileID: 570189864}
@@ -20130,7 +20053,7 @@ MonoBehaviour:
   bpm: 60
   bpmStep: 10
   playOnStart: 1
-  startDelay: 2
+  startDelay: 1.5
   playMetronome: 1
   metronomeAudioSource: {fileID: 2091660995}
   metronomeClick: {fileID: 8300000, guid: ea2f3ffcef8c547ea8365b58f88ee1a9, type: 3}

@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class Obstacle : MonoBehaviour
@@ -57,29 +58,27 @@ public class Obstacle : MonoBehaviour
                 EvaluateSpeed();
             }
         }
-
-        if (transform.position.x < -20f)
-            Destroy(gameObject);
     }
 
     void EvaluateSpeed()
     {
         float speed = speedController.GetCurrentSpeed();
-        Debug.Log($"충돌 판정 / 현재속도: {speed} / 요구속도: {requiredSpeed}");
-
         if (speed >= requiredSpeed)
         {
-            Debug.Log("통과!");
             spawner.OnObstaclePassed();
         }
         else
         {
-            Debug.Log("실패!");
             spawner.OnObstacleFailed();
             Destroy(gameObject);
         }
+        StartCoroutine(DestroyRoutine());
     }
-
+    private IEnumerator DestroyRoutine()
+    {
+        yield return new WaitForSeconds(3.0f);
+        Destroy(gameObject);
+    }
     private void Crash()
     {
         if (hasCrashed) return;
@@ -109,7 +108,6 @@ public class Obstacle : MonoBehaviour
             rb.WakeUp();
         }
     }
-
     private void OnDestroy()
     {
         foreach (var rb in Rocks)

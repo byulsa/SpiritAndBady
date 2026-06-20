@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -19,7 +20,6 @@ public class Iris : MonoBehaviour
     private Coroutine deathCoroutine;
 
     private static readonly int Radius = Shader.PropertyToID("_Radius");
-
     private void Awake()
     {
         irisGraphic = GetComponent<Graphic>();
@@ -60,7 +60,6 @@ public class Iris : MonoBehaviour
             healthManager.OnDead -= HandleDead;
         }
     }
-
     private void HandleDead()
     {
         if (deathCoroutine == null)

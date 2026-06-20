@@ -17,8 +17,14 @@ public class NoteGenerator : MonoBehaviour
     public Transform SpawnPoint;
     public Transform JudgementPoint;
     [SerializeField, Min(0f)] private float audioScheduleAheadTime = 0.1f;
+
+    [Header("Note Pool")]
+    [SerializeField, Min(0)] private int initialPoolSize = 16;
+    [SerializeField, Min(1)] private int maxPoolSize = 32;
+
     private const int MeasuresPerWave = 4;
     private readonly List<NoteTiming> currentNoteTimings = new List<NoteTiming>();
+    private NotePool notePool;
     private MeasureData[] currentWave;
     private int waveStartMeasureIndex;
     private int currentWaveMeasureIndex;
@@ -30,6 +36,12 @@ public class NoteGenerator : MonoBehaviour
     public event Action OnWaveFinished;
     public event Action<int> OnMeasureStarted;
     public event Action<MeasureData[]> OnWaveStarted;
+
+    private void Awake()
+    {
+        EnsureNotePool();
+    }
+
     private void OnEnable()
     {
         FindRythmManager();
@@ -145,20 +157,17 @@ public class NoteGenerator : MonoBehaviour
 
     private void GenerateNote(NoteTiming noteTiming)
     {
-        if (NotePrefab != null && SpawnPoint != null && JudgementPoint != null)
+        if (NotePrefab != null && SpawnPoint != null && JudgementPoint != null &&
+            EnsureNotePool())
         {
-            GameObject note = Instantiate(NotePrefab, SpawnPoint.position, SpawnPoint.rotation);
+            PooledNote pooledNote = notePool.Get(SpawnPoint.position, SpawnPoint.rotation);
+            GameObject note = pooledNote.gameObject;
             if (judgement != null)
             {
                 judgement.RegisterNote(note.transform);
             }
 
-            TimedNoteMover mover = note.GetComponent<TimedNoteMover>();
-
-            if (mover == null)
-            {
-                mover = note.AddComponent<TimedNoteMover>();
-            }
+            TimedNoteMover mover = pooledNote.Mover;
 
             double guideDspTime = GetCurrentMeasureDspTime(noteTiming.beatPosition);
             double judgementDspTime =
@@ -172,10 +181,28 @@ public class NoteGenerator : MonoBehaviour
 
             ScheduleSfx(guideDspTime);
         }
+    }
 
-        Debug.Log(
-            $"Note: measure {currentWaveMeasureIndex + 1}, " +
-            $"beat {noteTiming.beatIndex + 1}, tick {noteTiming.tick}");
+    private bool EnsureNotePool()
+    {
+        if (notePool != null && notePool.IsInitialized)
+        {
+            return true;
+        }
+
+        if (NotePrefab == null)
+        {
+            return false;
+        }
+
+        notePool = GetComponent<NotePool>();
+        if (notePool == null)
+        {
+            notePool = gameObject.AddComponent<NotePool>();
+        }
+
+        notePool.Initialize(NotePrefab, initialPoolSize, maxPoolSize);
+        return notePool.IsInitialized;
     }
 
     private double GetCurrentMeasureDspTime(float beatPosition)
@@ -276,6 +303,12 @@ public class NoteGenerator : MonoBehaviour
         }
         rythmManager.OnMeasureStart += HandleMeasureStart;
         isSubscribed = true;
+    }
+
+    private void OnValidate()
+    {
+        initialPoolSize = Mathf.Max(0, initialPoolSize);
+        maxPoolSize = Mathf.Max(1, initialPoolSize, maxPoolSize);
     }
 
     private enum WavePhase

@@ -57,13 +57,13 @@ public class MeasureGenerator : MonoBehaviour
 
         if (rythmManager == null)
         {
-            Debug.LogError("RythmManager is required to generate measures.");
+            // Debug.LogError("RythmManager is required to generate measures.");
             return null;
         }
 
         if (IsWaveReady)
         {
-            Debug.LogError("The wave already has four measures. Call ResetWave first.");
+            // Debug.LogError("The wave already has four measures. Call ResetWave first.");
             return null;
         }
 
@@ -71,7 +71,7 @@ public class MeasureGenerator : MonoBehaviour
 
         if (safeDifficulty != difficulty)
         {
-            Debug.LogWarning("Difficulty must be 0 (Easy), 1 (Normal), or 2 (Hard).");
+            // Debug.LogWarning("Difficulty must be 0 (Easy), 1 (Normal), or 2 (Hard).");
         }
 
         generationBpm = rythmManager.NextMeasureBPM;
@@ -82,10 +82,10 @@ public class MeasureGenerator : MonoBehaviour
         GeneratedMeasures[nextMeasureIndex] = measure;
         nextMeasureIndex++;
 
-        Debug.Log(
-            $"Generated measure {nextMeasureIndex}/{MeasureCount}: " +
-            $"difficulty {safeDifficulty}, " +
-            $"BPM {generationBpm:F0}");
+        // Debug.Log(
+        //     $"Generated measure {nextMeasureIndex}/{MeasureCount}: " +
+        //     $"difficulty {safeDifficulty}, " +
+        //     $"BPM {generationBpm:F0}");
 
         return measure;
     }

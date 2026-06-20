@@ -29,7 +29,7 @@ public class ParabolaMover : MonoBehaviour
 
         transform.position = end;
         judgement.ExFireEx();
-        Destroy(gameObject);
+        PooledNote.ReturnOrDestroy(gameObject);
     }
 
     private Vector3 CalculateBezier(

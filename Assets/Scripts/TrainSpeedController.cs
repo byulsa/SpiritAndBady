@@ -192,7 +192,6 @@ public class TrainSpeedController : MonoBehaviour
         }
 
         trainTransform.position = trainOriginalPosition;
-
         // 복귀 후 평소 사운드로 복귀
         if (chargeAudioSource != null) chargeAudioSource.Stop();
         if (normalAudioSource != null) normalAudioSource.Play();
@@ -203,6 +202,5 @@ public class TrainSpeedController : MonoBehaviour
         currentSpeed = 0f;
         TotalExpectedSpeedGain = 0f;
         OnSpeedChanged?.Invoke(currentSpeed);
-        Debug.Log("게임 오버 - 속도 0");
     }
 }
