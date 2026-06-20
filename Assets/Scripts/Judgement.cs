@@ -126,7 +126,7 @@ public class Judgement : MonoBehaviour
 
         if (result == JudgeType.Perfect)
         {
-            cameraMoving.Zoom(13f, 0.25f);
+            cameraMoving.Zoom(15f, 0.25f);
 
         }
         if (result != JudgeType.Miss)
