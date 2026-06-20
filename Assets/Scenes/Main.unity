@@ -2644,6 +2644,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TutorialManager
   TutorialFirstTimePanel: {fileID: 541601625}
   RythmManager: {fileID: 2091660994}
+  Audio: {fileID: 0}
+  Clip: {fileID: 0}
 --- !u!1 &584298175
 GameObject:
   m_ObjectHideFlags: 0
@@ -2914,10 +2916,10 @@ MonoBehaviour:
   spawnPoint: {fileID: 1430660511}
   isTestMode: 0
   testSpawnKey: 32
-  initialRequiredSpeed: 70
+  initialRequiredSpeed: 60
   successIncrease: 10
   failDecrease: 10
-  minRequiredSpeed: 70
+  minRequiredSpeed: 60
   maxRequiredSpeed: 170
   obstacleSpeedScale: 0.1
   obstacleYOffset: 0.2
@@ -2930,7 +2932,7 @@ MonoBehaviour:
   healthManager: {fileID: 646556704}
   trainSpeedController: {fileID: 2065287077}
   source: {fileID: 703005773}
-  successSound: {fileID: 8300000, guid: f9531662e64245c4bb714078164def65, type: 3}
+  successSound: {fileID: 8300000, guid: ee4debab5a67e1343894a84410234f9c, type: 3}
   FailSound: {fileID: 8300000, guid: 141ea69974b11904a96a0cb9c5d9dc76, type: 3}
   VignetteMat: {fileID: 241729795}
 --- !u!82 &703005773
@@ -12042,6 +12044,13 @@ MonoBehaviour:
   backgroundLoop: {fileID: 514417092}
   judgement: {fileID: 1443290737}
   PlayerInput: {fileID: 2054379976}
+  trainTransform: {fileID: 1287316062}
+  normalAudioSource: {fileID: 0}
+  chargeAudioSource: {fileID: 0}
+  chargeSound: {fileID: 0}
+  moveDistance: 1
+  moveDuration: 0.5
+  returnDelay: 0.5
 --- !u!1 &2089457401
 GameObject:
   m_ObjectHideFlags: 0

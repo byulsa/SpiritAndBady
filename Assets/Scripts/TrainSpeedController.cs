@@ -1,11 +1,11 @@
 using System;
+using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 
 public class TrainSpeedController : MonoBehaviour
 {
-    [Header("��Ʈ Ÿ�Ժ� �ӵ� (km)")]
-
+    [Header("노트 타입별 속도 (km)")]
     [SerializeField] private float[] DifficultySpeed;
     [SerializeField] private float maxSpeed = 1000.0f;
     [SerializeField] private float initialSpeed = 60.0f;
@@ -16,6 +16,7 @@ public class TrainSpeedController : MonoBehaviour
     private MeasureData[] CurrentWave;
     private float decreaseSpeed;
     private int totalNotes = 0;
+    private float currentRequiredSpeed = 0f;
 
     [Header("Components Reference")]
     [SerializeField] private NoteGenerator NoteGenerator;
@@ -23,31 +24,32 @@ public class TrainSpeedController : MonoBehaviour
     [SerializeField] private Judgement judgement;
     [SerializeField] private PatternInput PlayerInput;
 
+    [Header("기차 이동 효과")]
+    [SerializeField] private Transform trainTransform;
+    [SerializeField] private AudioSource normalAudioSource;
+    [SerializeField] private AudioSource chargeAudioSource;
+    [SerializeField] private AudioClip chargeSound;
+    public float moveDistance = -1f;
+    public float moveDuration = 0.5f;
+    public float returnDelay = 0.5f;
+    private Vector3 trainOriginalPosition;
+
     private void Awake()
     {
         if (backgroundLoop == null)
-        {
             backgroundLoop = FindAnyObjectByType<BackgroundLoop>();
-        }
         if (judgement == null)
-        {
             judgement = FindAnyObjectByType<Judgement>();
-        }
         if (NoteGenerator == null)
-        {
             NoteGenerator = FindAnyObjectByType<NoteGenerator>();
-        }
         if (PlayerInput == null)
-        {
             PlayerInput = FindAnyObjectByType<PatternInput>();
-        }
     }
+
     private void OnEnable()
     {
         if (judgement)
-        {
             judgement.OnJudged += HandleJudge;
-        }
         if (NoteGenerator)
         {
             NoteGenerator.OnWaveStarted += OnWaveStarted;
@@ -55,34 +57,13 @@ public class TrainSpeedController : MonoBehaviour
             NoteGenerator.OnWaveFinished += OnWaveFinished;
         }
         if (PlayerInput)
-        {
             PlayerInput.OnMeasureSelected += OnMeasureSelected;
-        }
     }
-    private void OnMeasureSelected(int _, int Difficulty)
-    {
-        if (Difficulty < 0 || Difficulty >= DifficultySpeed.Length)
-        {
-            return;
-        }
-        TotalExpectedSpeedGain += DifficultySpeed[Difficulty];
-        OnExpectedSpeedGainChanged?.Invoke(TotalExpectedSpeedGain);
-    }
-    private void Start()
-    {
-        currentSpeed = initialSpeed;
-        OnSpeedChanged?.Invoke(currentSpeed);
-        OnExpectedSpeedGainChanged?.Invoke(TotalExpectedSpeedGain);
-        Debug.Log($"backgroundLoop null: {backgroundLoop == null}");
-        if (backgroundLoop != null)
-            backgroundLoop.SetSpeed(currentSpeed);
-    }
+
     private void OnDisable()
     {
         if (judgement != null)
-        {
             judgement.OnJudged -= HandleJudge;
-        }
         if (NoteGenerator != null)
         {
             NoteGenerator.OnWaveStarted -= OnWaveStarted;
@@ -90,10 +71,28 @@ public class TrainSpeedController : MonoBehaviour
             NoteGenerator.OnWaveFinished -= OnWaveFinished;
         }
         if (PlayerInput)
-        {
             PlayerInput.OnMeasureSelected -= OnMeasureSelected;
-        }
     }
+
+    private void Start()
+    {
+        currentSpeed = initialSpeed;
+        OnSpeedChanged?.Invoke(currentSpeed);
+        OnExpectedSpeedGainChanged?.Invoke(TotalExpectedSpeedGain);
+        if (backgroundLoop != null)
+            backgroundLoop.SetSpeed(currentSpeed);
+        if (trainTransform != null)
+            trainOriginalPosition = trainTransform.position;
+    }
+
+    private void OnMeasureSelected(int _, int Difficulty)
+    {
+        if (Difficulty < 0 || Difficulty >= DifficultySpeed.Length)
+            return;
+        TotalExpectedSpeedGain += DifficultySpeed[Difficulty];
+        OnExpectedSpeedGainChanged?.Invoke(TotalExpectedSpeedGain);
+    }
+
     private void OnWaveFinished()
     {
         currentSpeed += TotalExpectedSpeedGain;
@@ -103,29 +102,24 @@ public class TrainSpeedController : MonoBehaviour
         if (backgroundLoop != null)
             backgroundLoop.SetSpeed(currentSpeed);
     }
+
     private void OnWaveStarted(MeasureData[] datas)
     {
-        if (datas == null)
-        {
-            return;
-        }
+        if (datas == null) return;
         CurrentWave = datas;
         TotalExpectedSpeedGain = 0;
         foreach (var data in datas)
-        {
             TotalExpectedSpeedGain += DifficultySpeed[(int)data.difficulty];
-        }
         OnExpectedSpeedGainChanged?.Invoke(TotalExpectedSpeedGain);
     }
+
     private void OnMeasureStarted(int index)
     {
-        if (CurrentWave == null || index >= CurrentWave.Length)
-        {
-            return;
-        }
+        if (CurrentWave == null || index >= CurrentWave.Length) return;
         totalNotes = CurrentWave[index].GetNotes();
         decreaseSpeed = DifficultySpeed[(int)CurrentWave[index].difficulty] / (totalNotes > 0 ? totalNotes : 1.0f);
     }
+
     void HandleJudge(JudgeType result)
     {
         if (result == JudgeType.Miss)
@@ -134,12 +128,50 @@ public class TrainSpeedController : MonoBehaviour
             OnExpectedSpeedGainChanged?.Invoke(TotalExpectedSpeedGain);
         }
     }
+
+    public void SetRequiredSpeed(float speed)
+    {
+        currentRequiredSpeed = speed;
+    }
+
+    IEnumerator TrainChargeEffect()
+    {
+        // 평소 사운드 끄고 증기 사운드 켜기
+        if (normalAudioSource != null) normalAudioSource.Stop();
+        if (chargeAudioSource != null)
+        {
+            chargeAudioSource.clip = chargeSound;
+            chargeAudioSource.Play();
+        }
+
+        float elapsed = 0f;
+        Vector3 startPos = trainOriginalPosition;
+        Vector3 targetPos = trainOriginalPosition + new Vector3(moveDistance, 0f, 0f);
+
+        while (elapsed < moveDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / moveDuration;
+            trainTransform.position = Vector3.Lerp(startPos, targetPos, t);
+            yield return null;
+        }
+
+        trainTransform.position = targetPos;
+    }
+
+    public void TryChargeEffect()
+    {
+        if (currentSpeed >= currentRequiredSpeed)
+            StartCoroutine(TrainChargeEffect());
+    }
+
     public float GetCurrentSpeed() => currentSpeed;
     public float GetMaxSpeed() => maxSpeed;
+    public Vector3 GetTrainOriginalPosition() => trainOriginalPosition;
+
     public void ResetSpeed()
     {
         currentSpeed = initialSpeed;
-        maxSpeed = 0f;
         backgroundLoop.SetSpeed(currentSpeed);
     }
 
@@ -150,6 +182,34 @@ public class TrainSpeedController : MonoBehaviour
         if (backgroundLoop != null)
             backgroundLoop.SetSpeed(currentSpeed);
         Debug.Log($"장애물 결과: {(passed ? "통과" : "실패")} / 속도 초기화: {currentSpeed}");
+
+        StartCoroutine(ReturnWithDelay());
+    }
+
+    IEnumerator ReturnWithDelay()
+    {
+        yield return new WaitForSeconds(returnDelay);
+        StartCoroutine(ReturnToOriginalPosition());
+    }
+
+    IEnumerator ReturnToOriginalPosition()
+    {
+        float elapsed = 0f;
+        Vector3 startPos = trainTransform.position;
+
+        while (elapsed < moveDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / moveDuration;
+            trainTransform.position = Vector3.Lerp(startPos, trainOriginalPosition, t);
+            yield return null;
+        }
+
+        trainTransform.position = trainOriginalPosition;
+
+        // 복귀 후 평소 사운드로 복귀
+        if (chargeAudioSource != null) chargeAudioSource.Stop();
+        if (normalAudioSource != null) normalAudioSource.Play();
     }
 
     public void SetSpeedZero()

@@ -69,8 +69,8 @@ public class ObstacleSpawner : MonoBehaviour
     {
         if (rythmManager != null)
         {
-            if (rythmManager != null)
-                rythmManager.RunOnNextMeasure(SpawnObstacle);
+            trainSpeedController?.SetRequiredSpeed(currentRequiredSpeed);
+            rythmManager.RunOnNextMeasure(SpawnObstacle);
         }
     }
 
@@ -115,8 +115,13 @@ public class ObstacleSpawner : MonoBehaviour
     {
         if (obstaclePrefabs.Length == 0 || trainTransform == null) return;
 
-        float timeToHit = rythmManager.SecondsPerBeat * 2f;
-        float spawnX = trainTransform.position.x + (backgroundLoop.currentSpeed * obstacleSpeedScale * timeToHit);
+
+        // 기차가 moveDistance만큼 이동한 위치 기준으로 스폰 위치 계산
+        bool willCharge = trainSpeedController.GetCurrentSpeed() >= currentRequiredSpeed;
+        float timeToHit = willCharge ? rythmManager.SecondsPerBeat * 1f : rythmManager.SecondsPerBeat * 2f;
+        float trainAdvancedX = trainTransform.position.x + (willCharge ? trainSpeedController.moveDistance : 0f);
+        float spawnX = trainAdvancedX + (backgroundLoop.currentSpeed * obstacleSpeedScale * timeToHit);
+
         Vector3 spawnPos = new Vector3(
             spawnX,
             trainTransform.position.y + obstacleYOffset,
@@ -135,5 +140,8 @@ public class ObstacleSpawner : MonoBehaviour
             obstacle.obstacleSpeedScale = obstacleSpeedScale;
             obstacle.Init(this, arrivalDspTime, backgroundLoop, trainSpeedController);
         }
+
+        // 스폰 후 전진 연출
+        trainSpeedController?.TryChargeEffect();
     }
 }
