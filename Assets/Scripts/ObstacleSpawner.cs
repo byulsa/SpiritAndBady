@@ -5,22 +5,17 @@ public class ObstacleSpawner : MonoBehaviour
 {
     [Header("장애물")]
     public GameObject[] obstaclePrefabs;
-    public Transform spawnPoint;
-
-    [Header("테스트용 소환")]
-    public bool isTestMode = true;
-    public KeyCode testSpawnKey = KeyCode.Space;
 
     [Header("요구 속도 설정")]
-    public float initialRequiredSpeed = 60f;  // 시작 요구 속도
-    public float successIncrease = 10f;       // 통과 시 증가량
-    public float failDecrease = 10f;          // 실패 시 감소량
-    public float minRequiredSpeed = 60f;      // 최저 요구 속도
-    public float maxRequiredSpeed = 170f;     // 최고 요구 속도
+    public float initialRequiredSpeed = 60f;
+    public float successIncrease = 10f;
+    public float failDecrease = 10f;
+    public float minRequiredSpeed = 60f;
+    public float maxRequiredSpeed = 170f;
+    public float spawnDistance = 20f;
 
     [Header("장애물 속도 설정")]
     public float obstacleSpeedScale = 0.1f;
-
     public float obstacleYOffset = 0.2f;
 
     public float currentRequiredSpeed;
@@ -29,12 +24,11 @@ public class ObstacleSpawner : MonoBehaviour
     [SerializeField] private RythmManager rythmManager;
     [SerializeField] private NoteGenerator noteGenerator;
     [SerializeField] private PatternInput Input;
-    [SerializeField] private BackgroundLoop backgroundLoop;
     [SerializeField] private Transform trainTransform;
     [SerializeField] private HealthManager healthManager;
     [SerializeField] private TrainSpeedController trainSpeedController;
 
-    [Header("sound")]
+    [Header("Sound")]
     [SerializeField] private AudioSource source;
     [SerializeField] private AudioClip successSound;
     [SerializeField] private AudioClip FailSound;
@@ -59,12 +53,6 @@ public class ObstacleSpawner : MonoBehaviour
             Input.OnSelectionTimedOut -= OnRhythmSectionComplete;
     }
 
-    void Update()
-    {
-        // if (isTestMode && Input.GetKeyDown(testSpawnKey))
-        //     StartCoroutine(SpawnAfterDelay(GetBarDuration()));
-    }
-
     public void OnRhythmSectionComplete()
     {
         if (rythmManager != null)
@@ -86,7 +74,9 @@ public class ObstacleSpawner : MonoBehaviour
             if (Input != null)
                 Input.BeginSelection();
         });
-        source.PlayOneShot(successSound);
+
+        if (source != null && successSound != null)
+            source.PlayOneShot(successSound);
     }
 
     public void OnObstacleFailed()
@@ -99,7 +89,8 @@ public class ObstacleSpawner : MonoBehaviour
 
         if (isGameOver) return;
 
-        VignetteMat.DamageEffect();
+        if (VignetteMat != null)
+            VignetteMat.DamageEffect();
 
         if (rythmManager != null)
             rythmManager.RunOnNextMeasure(() =>
@@ -108,40 +99,35 @@ public class ObstacleSpawner : MonoBehaviour
                     Input.BeginSelection();
             });
 
-        source.PlayOneShot(FailSound);
+        if (source != null && FailSound != null)
+            source.PlayOneShot(FailSound);
     }
 
     void SpawnObstacle()
     {
         if (obstaclePrefabs.Length == 0 || trainTransform == null) return;
 
-
-        // 기차가 moveDistance만큼 이동한 위치 기준으로 스폰 위치 계산
         bool willCharge = trainSpeedController.GetCurrentSpeed() >= currentRequiredSpeed;
         float timeToHit = willCharge ? rythmManager.SecondsPerBeat * 1f : rythmManager.SecondsPerBeat * 2f;
         float trainAdvancedX = trainTransform.position.x + (willCharge ? trainSpeedController.moveDistance : 0f);
-        float spawnX = trainAdvancedX + (backgroundLoop.currentSpeed * obstacleSpeedScale * timeToHit);
 
-        Vector3 spawnPos = new Vector3(
-            spawnX,
-            trainTransform.position.y + obstacleYOffset,
-            trainTransform.position.z
-        );
+        // 고정 거리에서 생성
+        float spawnX = trainAdvancedX + spawnDistance;
+        Vector3 spawnPos = new Vector3(spawnX, trainTransform.position.y + obstacleYOffset, trainTransform.position.z);
+        Vector3 targetPos = new Vector3(trainAdvancedX, trainTransform.position.y + obstacleYOffset, trainTransform.position.z);
+
+        double arrivalDspTime = AudioSettings.dspTime + timeToHit;
 
         int randomIndex = Random.Range(0, obstaclePrefabs.Length);
         GameObject obj = Instantiate(obstaclePrefabs[randomIndex], spawnPos, Quaternion.identity);
-
-        double arrivalDspTime = AudioSettings.dspTime + timeToHit;
 
         Obstacle obstacle = obj.GetComponent<Obstacle>();
         if (obstacle != null)
         {
             obstacle.requiredSpeed = currentRequiredSpeed;
-            obstacle.obstacleSpeedScale = obstacleSpeedScale;
-            obstacle.Init(this, arrivalDspTime, backgroundLoop, trainSpeedController);
+            obstacle.Init(this, arrivalDspTime, targetPos, trainSpeedController);
         }
 
-        // 스폰 후 전진 연출
         trainSpeedController?.TryChargeEffect();
     }
 }

@@ -10,45 +10,54 @@ public class Obstacle : MonoBehaviour
     [SerializeField, Min(0f)] private float crashForceMultiplier = 1f;
     [SerializeField, Range(0f, 2f)] private float directionNoise = 0.75f;
 
-    private BackgroundLoop backgroundLoop;
     private TrainSpeedController speedController;
     private ObstacleSpawner spawner;
     private double arrivalDspTime;
+    private double spawnDspTime;
+    private Vector3 spawnPosition;
+    private Vector3 targetPosition;
     private bool isInitialized = false;
     private bool hasJudged = false;
     private bool hasCrashed = false;
 
     void Start()
     {
-        backgroundLoop = FindAnyObjectByType<BackgroundLoop>();
         speedController = FindAnyObjectByType<TrainSpeedController>();
 
         if (Rocks == null || Rocks.Length == 0)
             Rocks = GetComponentsInChildren<Rigidbody>(true);
     }
 
-    public void Init(ObstacleSpawner obstacleSpawner, double arrivalTime,
-    BackgroundLoop backgroundLoop, TrainSpeedController speedController)
+    public void Init(ObstacleSpawner obstacleSpawner, double arrivalTime, Vector3 target, TrainSpeedController sc)
     {
-        this.backgroundLoop = backgroundLoop;
-        this.speedController = speedController;
         spawner = obstacleSpawner;
         arrivalDspTime = arrivalTime;
+        spawnDspTime = AudioSettings.dspTime;
+        spawnPosition = transform.position;
+        targetPosition = target;
+        speedController = sc;
         isInitialized = true;
         Debug.Log($"장애물 생성 / 도달 예정 DSP: {arrivalDspTime:F3} / 현재 DSP: {AudioSettings.dspTime:F3}");
     }
 
-    public float obstacleSpeedScale = 0.1f;
     void Update()
     {
-        if (!isInitialized || backgroundLoop == null) return;
-        transform.Translate(Vector3.left * backgroundLoop.currentSpeed * obstacleSpeedScale * Time.deltaTime);
-        if (!hasJudged && AudioSettings.dspTime >= arrivalDspTime)
+        if (!isInitialized) return;
+
+        if (!hasJudged)
         {
-            hasJudged = true;
-            Crash();
-            EvaluateSpeed();
+            float t = (float)((AudioSettings.dspTime - spawnDspTime) / (arrivalDspTime - spawnDspTime));
+            t = Mathf.Clamp01(t);
+            transform.position = Vector3.Lerp(spawnPosition, targetPosition, t);
+
+            if (AudioSettings.dspTime >= arrivalDspTime)
+            {
+                hasJudged = true;
+                Crash();
+                EvaluateSpeed();
+            }
         }
+
         if (transform.position.x < -20f)
             Destroy(gameObject);
     }
@@ -67,27 +76,23 @@ public class Obstacle : MonoBehaviour
         {
             Debug.Log("실패!");
             spawner.OnObstacleFailed();
+            Destroy(gameObject);
         }
     }
+
     private void Crash()
     {
-        if (hasCrashed)
-            return;
-
+        if (hasCrashed) return;
         hasCrashed = true;
 
         if (Rocks == null || Rocks.Length == 0)
             Rocks = GetComponentsInChildren<Rigidbody>(true);
 
-        float movingSpeed = backgroundLoop != null
-            ? backgroundLoop.currentSpeed * obstacleSpeedScale
-            : 0f;
-        float crashForce = movingSpeed * crashForceMultiplier;
+        float crashForce = speedController.GetCurrentSpeed() * crashForceMultiplier;
 
         foreach (var rb in Rocks)
         {
-            if (rb == null)
-                continue;
+            if (rb == null) continue;
 
             Vector3 direction = Vector3.right + Random.insideUnitSphere * directionNoise;
             direction.x = Mathf.Max(0f, direction.x);
@@ -104,12 +109,13 @@ public class Obstacle : MonoBehaviour
             rb.WakeUp();
         }
     }
+
     private void OnDestroy()
     {
         foreach (var rb in Rocks)
         {
-            Destroy(rb.gameObject);
+            if (rb != null)
+                Destroy(rb.gameObject);
         }
     }
-
 }
