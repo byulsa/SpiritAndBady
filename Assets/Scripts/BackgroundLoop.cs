@@ -2,10 +2,10 @@ using UnityEngine;
 
 public class BackgroundLoop : MonoBehaviour
 {
-    [Header("��� ����")]
+    [Header("최대 속도")]
     public float maxSpeed = 100f;
 
-    [Header("�׽�Ʈ ����")]
+    [Header("테스트용 이동")]
     public bool isTestMode = true;
     public KeyCode speedUpKey = KeyCode.RightArrow;
     public KeyCode speedDownKey = KeyCode.LeftArrow;
