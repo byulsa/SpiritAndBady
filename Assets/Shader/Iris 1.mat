@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Iris
+  m_Name: Iris 1
   m_Shader: {fileID: 4800000, guid: d8c75652ee49e420ea62a4fbe7271164, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -31,7 +31,7 @@ Material:
     m_Floats:
     - _AspectRatio: 1.7777778
     - _ColorMask: 15
-    - _Edge: 0.412
+    - _Edge: 0.5
     - _Radius: 1
     - _Stencil: 0
     - _StencilComp: 8
@@ -41,6 +41,6 @@ Material:
     - _UseUIAlphaClip: 0
     m_Colors:
     - _Center: {r: 0.5, g: 0.5, b: 0, a: 0}
-    - _Color: {r: 0, g: 0, b: 0, a: 1}
+    - _Color: {r: 1, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
