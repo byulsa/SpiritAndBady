@@ -16,9 +16,6 @@ public class NoteGenerator : MonoBehaviour
     public GameObject NotePrefab;
     public Transform SpawnPoint;
     public Transform JudgementPoint;
-    [Tooltip("판정선을 지난 노트가 향할 위치입니다. 비어 있으면 진행 방향으로 자동 계산합니다.")]
-    public Transform DestinationPoint;
-    [SerializeField, Min(0.01f)] private float fallbackPostJudgeDistance = 2f;
     [SerializeField, Min(0f)] private float audioScheduleAheadTime = 0.1f;
     private const int MeasuresPerWave = 4;
     private readonly List<NoteTiming> currentNoteTimings = new List<NoteTiming>();
@@ -166,12 +163,10 @@ public class NoteGenerator : MonoBehaviour
             double guideDspTime = GetCurrentMeasureDspTime(noteTiming.beatPosition);
             double judgementDspTime =
                 rythmManager.GetNextMeasureDspTime(noteTiming.beatPosition);
-            Vector3 destination = GetDestinationPosition();
 
             mover.Initialize(
                 SpawnPoint.position,
                 JudgementPoint.position,
-                destination,
                 guideDspTime,
                 judgementDspTime);
 
@@ -187,23 +182,6 @@ public class NoteGenerator : MonoBehaviour
     {
         return rythmManager.CurrentMeasureStartDspTime +
                beatPosition * rythmManager.SecondsPerBeat;
-    }
-
-    private Vector3 GetDestinationPosition()
-    {
-        if (DestinationPoint != null)
-        {
-            return DestinationPoint.position;
-        }
-
-        Vector3 direction = JudgementPoint.position - SpawnPoint.position;
-        if (direction.sqrMagnitude <= Mathf.Epsilon)
-        {
-            direction = Vector3.right;
-        }
-
-        return JudgementPoint.position +
-               direction.normalized * fallbackPostJudgeDistance;
     }
 
     private void ScheduleSfx(double dspTime)

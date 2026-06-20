@@ -2,8 +2,6 @@ using UnityEngine;
 using System.Collections.Generic;
 using System;
 using TMPro;
-using JetBrains.Annotations;
-using UnityEngine.Timeline;
 using System.Collections;
 
 public enum JudgeType
@@ -20,7 +18,7 @@ public class Judgement : MonoBehaviour
 
     [Header("Judge Line")]
     public Transform judgeLine;
-
+    [SerializeField] private Transform FirePosition;
     [Header("Judge Range")]
     public float perfectRange = 0.1f;
     public float goodRange = 0.25f;
@@ -128,7 +126,32 @@ public class Judgement : MonoBehaviour
             cameraMoving.Zoom(13f, 0.25f);
             ExFire.Play();
         }
-        if (result != JudgeType.Miss) HitSystem.Play();
+        if (result != JudgeType.Miss)
+        {
+            HitSystem.Play();
+
+            if (note.TryGetComponent(out TimedNoteMover timedMover))
+            {
+                timedMover.StopMovement();
+            }
+
+            if (note.TryGetComponent(out ParabolaMover parabolaMover) &&
+                FirePosition != null)
+            {
+                StartCoroutine(parabolaMover.Move(
+                    note.position,
+                    FirePosition.position,
+                    Vector3.up,
+                    1f,
+                    1f));
+            }
+            else
+            {
+                Destroy(note.gameObject);
+            }
+
+            return;
+        }
         Destroy(note.gameObject);
         Debug.Log($"Judgement : {result}");
     }

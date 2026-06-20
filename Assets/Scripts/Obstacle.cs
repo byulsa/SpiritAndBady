@@ -104,4 +104,12 @@ public class Obstacle : MonoBehaviour
             rb.WakeUp();
         }
     }
+    private void OnDestroy()
+    {
+        foreach (var rb in Rocks)
+        {
+            Destroy(rb.gameObject);
+        }
+    }
+
 }

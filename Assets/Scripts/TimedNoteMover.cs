@@ -4,41 +4,35 @@ public class TimedNoteMover : MonoBehaviour
 {
     private Vector3 startPosition;
     private Vector3 judgementPosition;
-    private Vector3 destinationPosition;
+    private Vector3 movementVelocity;
     private double moveStartTime;
     private double judgementTime;
-    private double destinationTime;
     private bool isInitialized;
 
     public void Initialize(
         Vector3 startPosition,
         Vector3 judgementPosition,
-        Vector3 destinationPosition,
         double startDspTime,
         double judgementDspTime)
     {
         this.startPosition = startPosition;
         this.judgementPosition = judgementPosition;
-        this.destinationPosition = destinationPosition;
         moveStartTime = startDspTime;
         judgementTime = System.Math.Max(moveStartTime, judgementDspTime);
 
         double approachDuration = judgementTime - moveStartTime;
-        float approachDistance = Vector3.Distance(startPosition, judgementPosition);
-        float exitDistance = Vector3.Distance(judgementPosition, destinationPosition);
-
-        if (approachDuration <= 0d || approachDistance <= Mathf.Epsilon)
-        {
-            destinationTime = judgementTime;
-        }
-        else
-        {
-            double unitsPerSecond = approachDistance / approachDuration;
-            destinationTime = judgementTime + exitDistance / unitsPerSecond;
-        }
+        movementVelocity = approachDuration > 0d
+            ? (judgementPosition - startPosition) / (float)approachDuration
+            : Vector3.zero;
 
         transform.position = startPosition;
         isInitialized = true;
+    }
+
+    public void StopMovement()
+    {
+        isInitialized = false;
+        enabled = false;
     }
 
     public bool HasPassedJudgementPoint(float distance)
@@ -84,16 +78,8 @@ public class TimedNoteMover : MonoBehaviour
             return;
         }
 
-        if (destinationTime <= judgementTime || now >= destinationTime)
-        {
-            transform.position = destinationPosition;
-            Destroy(gameObject);
-            return;
-        }
-
-        float exitT = (float)((now - judgementTime) /
-                              (destinationTime - judgementTime));
-        transform.position = Vector3.Lerp(
-            judgementPosition, destinationPosition, Mathf.Clamp01(exitT));
+        float elapsedAfterJudgement = (float)(now - judgementTime);
+        transform.position = judgementPosition +
+                             movementVelocity * elapsedAfterJudgement;
     }
 }
