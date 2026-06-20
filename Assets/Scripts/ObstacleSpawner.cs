@@ -46,9 +46,16 @@ public class ObstacleSpawner : MonoBehaviour
     }
 
     public void OnRhythmSectionComplete()
+{
+    if (rythmManager != null)
     {
-        StartCoroutine(SpawnAfterDelay(GetBarDuration()));
+        rythmManager.RunOnNextMeasure(SpawnObstacle);
     }
+}
+    // public void OnRhythmSectionComplete()
+    // {
+    //     StartCoroutine(SpawnAfterDelay(GetBarDuration()));
+    // }
 
     IEnumerator SpawnAfterDelay(float delay)
     {

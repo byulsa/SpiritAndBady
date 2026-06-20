@@ -123,6 +123,8 @@ public class PatternInput : MonoBehaviour
         MeasureData[] wave = measureGenerator.GetWaveMeasures();
         rythmManager.RunOnNextMeasure(() => noteGenerator.WaveStart(wave));
         Debug.Log("Pattern selection complete. Wave queued for the next measure.");
+        
+        enabled = false;
     }
 
     private void HandleMeasureStart(int measureIndex)
