@@ -11,8 +11,8 @@ public class Obstacle : MonoBehaviour
 
     void Start()
     {
-        backgroundLoop = Object.FindFirstAnyType<BackgroundLoop>();
-        speedController = Object.FindFirstAnyType<TrainSpeedController>();
+        backgroundLoop = Object.FindFirstObjectByType<BackgroundLoop>();
+        speedController = Object.FindFirstObjectByType<TrainSpeedController>();
     }
 
     public void Init(ObstacleSpawner obstacleSpawner)
