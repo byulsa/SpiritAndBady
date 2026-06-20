@@ -24,6 +24,7 @@ public class ObstacleSpawner : MonoBehaviour
     public float obstacleYOffset = 0.2f;
 
     public float currentRequiredSpeed;
+    private bool isGameOver = false;
 
     [SerializeField] private RythmManager rythmManager;
     [SerializeField] private NoteGenerator noteGenerator;
@@ -46,6 +47,8 @@ public class ObstacleSpawner : MonoBehaviour
             noteGenerator.OnWaveFinished += OnRhythmSectionComplete;
         if (Input != null)
             Input.OnSelectionTimedOut += OnRhythmSectionComplete;
+        if (healthManager != null)
+            healthManager.OnDead += () => isGameOver = true;
     }
 
     private void OnDestroy()
@@ -90,18 +93,22 @@ public class ObstacleSpawner : MonoBehaviour
     {
         trainSpeedController?.OnObstacleResult(false);
         currentRequiredSpeed = Mathf.Max(currentRequiredSpeed - failDecrease, minRequiredSpeed);
+
         if (healthManager != null)
             healthManager.TakeDamage();
 
+        if (isGameOver) return;
+
         VignetteMat.DamageEffect();
 
-        rythmManager.RunOnNextMeasure(() =>
-        {
-            if (Input != null)
-                Input.BeginSelection();
-        });
-        source.PlayOneShot(FailSound);
+        if (rythmManager != null)
+            rythmManager.RunOnNextMeasure(() =>
+            {
+                if (Input != null)
+                    Input.BeginSelection();
+            });
 
+        source.PlayOneShot(FailSound);
     }
 
     void SpawnObstacle()
