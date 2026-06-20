@@ -2,14 +2,14 @@ using UnityEngine;
 
 public class Obstacle : MonoBehaviour
 {
-    [Header("ÃÖ´ë ¼Óµµ")]
+    [Header("ï¿½Ö´ï¿½ ï¿½Óµï¿½")]
     public float requiredSpeed = 50f;
 
     private BackgroundLoop backgroundLoop;
     private TrainSpeedController speedController;
     private ObstacleSpawner spawner;
-    private Vector3 targetPosition; // ±âÂ÷ À§Ä¡
-    private double arriveTime;      // µµ´Þ DSP Å¸ÀÓ
+    private Vector3 targetPosition; // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡
+    private double arriveTime;      // ï¿½ï¿½ï¿½ï¿½ DSP Å¸ï¿½ï¿½
     private bool isInitialized = false;
 
     void Start()

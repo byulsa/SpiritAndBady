@@ -97,7 +97,8 @@ public class ObstacleSpawner : MonoBehaviour
         {
             // 3번째 박자 = beatPosition 2f
             double arrivalDspTime = rythmManager.GetNextMeasureDspTime(2f);
-            obstacle.Init(this, spawnPoint.position, arrivalDspTime);
+            obstacle.Init(this);//spawnPoint.position, arrivalDspTime
+
         }
     }
 }
