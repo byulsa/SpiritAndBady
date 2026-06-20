@@ -12,6 +12,7 @@ public class PatternInput : MonoBehaviour
 
     [Header("UI")]
     [SerializeField] private GameObject InputGuidePanel;
+    [SerializeField] private GameObject ExpectedSpeed;
 
     [Header("Selection")]
     [SerializeField] private int selectionMeasureCount = 2;
@@ -30,8 +31,18 @@ public class PatternInput : MonoBehaviour
     {
         FindDependencies();
         SubscribeToRythmManager();
-
-        InputGuidePanel?.SetActive(true);
+        Active(true);
+    }
+    private void Active(bool bActive)
+    {
+        if (InputGuidePanel)
+        {
+            InputGuidePanel.SetActive(bActive);
+        }
+        if (ExpectedSpeed)
+        {
+            ExpectedSpeed.SetActive(bActive);
+        }
     }
 
     private void Start()
@@ -48,7 +59,7 @@ public class PatternInput : MonoBehaviour
 
         rythmManager.RunOnNextMeasure(BeginSelection);
     }
-    
+
     private void OnDisable()
     {
         if (rythmManager != null && isSubscribed)
@@ -56,7 +67,6 @@ public class PatternInput : MonoBehaviour
             rythmManager.OnMeasureStart -= HandleMeasureStart;
             isSubscribed = false;
         }
-        InputGuidePanel?.SetActive(false);
     }
 
     private void Update()
@@ -81,6 +91,8 @@ public class PatternInput : MonoBehaviour
 
     public void BeginSelection()
     {
+        enabled = true;
+
         FindDependencies();
         SubscribeToRythmManager();
 
@@ -94,6 +106,9 @@ public class PatternInput : MonoBehaviour
             Debug.LogError("Pattern selection must begin on a running rhythm measure.");
             return;
         }
+
+
+
         Counter = 0;
         measureGenerator.ResetWave();
         SelectionEndMeasureIndex =
@@ -123,7 +138,9 @@ public class PatternInput : MonoBehaviour
         MeasureData[] wave = measureGenerator.GetWaveMeasures();
         rythmManager.RunOnNextMeasure(() => noteGenerator.WaveStart(wave));
         Debug.Log("Pattern selection complete. Wave queued for the next measure.");
-        
+
+        Active(false);
+
         enabled = false;
     }
 
@@ -138,6 +155,8 @@ public class PatternInput : MonoBehaviour
         Debug.LogWarning(
             $"Pattern selection timed out with " +
             $"{measureGenerator.GeneratedCount}/4 measures.");
+
+        Active(false);
         OnSelectionTimedOut?.Invoke();
     }
 
@@ -176,7 +195,6 @@ public class PatternInput : MonoBehaviour
         {
             return;
         }
-
         rythmManager.OnMeasureStart += HandleMeasureStart;
         isSubscribed = true;
     }
