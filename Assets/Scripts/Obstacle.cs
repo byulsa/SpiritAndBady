@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Obstacle : MonoBehaviour
@@ -11,6 +12,7 @@ public class Obstacle : MonoBehaviour
     private double arrivalDspTime;
     private bool isInitialized = false;
     private bool hasJudged = false;
+
 
     void Start()
     {

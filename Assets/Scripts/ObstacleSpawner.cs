@@ -28,6 +28,11 @@ public class ObstacleSpawner : MonoBehaviour
     [SerializeField] private HealthManager healthManager;
     [SerializeField] private TrainSpeedController trainSpeedController;
 
+    [Header("sound")]
+    [SerializeField] private AudioSource source;
+    [SerializeField] private AudioClip successSound;
+    [SerializeField] private AudioClip FailSound;
+
     private void Start()
     {
         currentRequiredSpeed = initialRequiredSpeed;
@@ -67,10 +72,12 @@ public class ObstacleSpawner : MonoBehaviour
         if (rythmManager != null)
             rythmManager.ChangeBpmOnNextMeasure(rythmManager.BPM + 10f);
 
-        rythmManager.RunOnNextMeasure(() => {
+        rythmManager.RunOnNextMeasure(() =>
+        {
             if (Input != null)
                 Input.BeginSelection();
         });
+        source.PlayOneShot(successSound);
     }
 
     public void OnObstacleFailed()
@@ -80,10 +87,12 @@ public class ObstacleSpawner : MonoBehaviour
         if (healthManager != null)
             healthManager.TakeDamage();
 
-        rythmManager.RunOnNextMeasure(() => {
+        rythmManager.RunOnNextMeasure(() =>
+        {
             if (Input != null)
                 Input.BeginSelection();
         });
+        source.PlayOneShot(FailSound);
     }
 
     void SpawnObstacle()
