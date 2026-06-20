@@ -119,6 +119,143 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &92303701
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 92303702}
+  - component: {fileID: 92303704}
+  - component: {fileID: 92303703}
+  m_Layer: 5
+  m_Name: Txt_Speed
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &92303702
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 92303701}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 513562391}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: -286.17}
+  m_SizeDelta: {x: 300, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &92303703
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 92303701}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_text: New Text
+  m_isRightToLeft: 0
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontSharedMaterials: []
+  m_fontMaterial: {fileID: 0}
+  m_fontMaterials: []
+  m_fontColor32:
+    serializedVersion: 2
+    rgba: 4278190080
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+  m_enableVertexGradient: 0
+  m_colorMode: 3
+  m_fontColorGradient:
+    topLeft: {r: 1, g: 1, b: 1, a: 1}
+    topRight: {r: 1, g: 1, b: 1, a: 1}
+    bottomLeft: {r: 1, g: 1, b: 1, a: 1}
+    bottomRight: {r: 1, g: 1, b: 1, a: 1}
+  m_fontColorGradientPreset: {fileID: 0}
+  m_spriteAsset: {fileID: 0}
+  m_tintAllSprites: 0
+  m_StyleSheet: {fileID: 0}
+  m_TextStyleHashCode: -1183493901
+  m_overrideHtmlColors: 0
+  m_faceColor:
+    serializedVersion: 2
+    rgba: 4294967295
+  m_fontSize: 72
+  m_fontSizeBase: 36
+  m_fontWeight: 400
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 18
+  m_fontSizeMax: 72
+  m_fontStyle: 0
+  m_HorizontalAlignment: 2
+  m_VerticalAlignment: 512
+  m_textAlignment: 65535
+  m_characterSpacing: 0
+  m_characterHorizontalScale: 1
+  m_wordSpacing: 0
+  m_lineSpacing: 0
+  m_lineSpacingMax: 0
+  m_paragraphSpacing: 0
+  m_charWidthMaxAdj: 0
+  m_TextWrappingMode: 1
+  m_wordWrappingRatios: 0.4
+  m_overflowMode: 0
+  m_linkedTextComponent: {fileID: 0}
+  parentLinkedComponent: {fileID: 0}
+  m_enableKerning: 0
+  m_ActiveFontFeatures: 6e72656b
+  m_enableExtraPadding: 0
+  checkPaddingRequired: 0
+  m_isRichText: 1
+  m_EmojiFallbackSupport: 1
+  m_parseCtrlCharacters: 1
+  m_isOrthographic: 1
+  m_isCullingEnabled: 0
+  m_horizontalMapping: 0
+  m_verticalMapping: 0
+  m_uvLineOffset: 0
+  m_geometrySortingOrder: 0
+  m_IsTextObjectScaleStatic: 0
+  m_VertexBufferAutoSizeReduction: 0
+  m_useMaxVisibleDescender: 1
+  m_pageToDisplay: 1
+  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_isUsingLegacyAnimationComponent: 0
+  m_isVolumetricText: 0
+  m_hasFontAssetChanged: 0
+  m_baseMaterial: {fileID: 0}
+  m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!222 &92303704
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 92303701}
+  m_CullTransparentMesh: 1
 --- !u!1 &104603820
 GameObject:
   m_ObjectHideFlags: 0
@@ -1005,7 +1142,7 @@ GameObject:
   m_Component:
   - component: {fileID: 436424262}
   m_Layer: 0
-  m_Name: SpawnPoint_Obstacle
+  m_Name: Obstacle Spawn Position
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1019,12 +1156,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 436424261}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 4.76, y: 5, z: 2.0998}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 2091660997}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &440597202
 GameObject:
@@ -1261,8 +1398,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 513562391}
+  - component: {fileID: 513562392}
   m_Layer: 5
-  m_Name: HPbarObejct
+  m_Name: Speed Gage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1284,13 +1422,29 @@ RectTransform:
   - {fileID: 1632220874}
   - {fileID: 440597203}
   - {fileID: 974378056}
+  - {fileID: 92303702}
   m_Father: {fileID: 807723466}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -808, y: 369}
+  m_AnchoredPosition: {x: -775, y: 387}
   m_SizeDelta: {x: 275, y: 275}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &513562392
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 513562390}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7df08ea7a36f94631874edca757237c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  image: {fileID: 1632220876}
+  speedText: {fileID: 92303703}
+  Controller: {fileID: 2091660999}
 --- !u!1 &546949114
 GameObject:
   m_ObjectHideFlags: 0
@@ -1412,7 +1566,7 @@ GameObject:
   m_Component:
   - component: {fileID: 807723466}
   m_Layer: 5
-  m_Name: HpPanel
+  m_Name: Speed Panel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1921,60 +2075,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1118624042}
   m_CullTransparentMesh: 1
---- !u!1 &1245889460
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1245889462}
-  - component: {fileID: 1245889461}
-  m_Layer: 0
-  m_Name: ObstaclSpawner
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1245889461
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1245889460}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4df4f0d66cdaff64a87e51b16d6abb73, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ObstacleSpawner
-  obstaclePrefabs:
-  - {fileID: 836772444561234050, guid: 62c07bf4f02daa24da800776b35f4cf7, type: 3}
-  spawnPoint: {fileID: 436424262}
-  isTestMode: 0
-  testSpawnKey: 32
-  rythmManager: {fileID: 0}
-  noteGenerator: {fileID: 0}
-  Input: {fileID: 0}
-  backgroundLoop: {fileID: 0}
-  trainTransform: {fileID: 0}
---- !u!4 &1245889462
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1245889460}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.19, y: 12.38, z: 2.0998}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1263887072
 GameObject:
   m_ObjectHideFlags: 0
@@ -2713,7 +2813,6 @@ GameObject:
   - component: {fileID: 1443290740}
   - component: {fileID: 1443290739}
   - component: {fileID: 1443290738}
-  - component: {fileID: 1443290736}
   - component: {fileID: 1443290742}
   - component: {fileID: 1443290737}
   m_Layer: 0
@@ -2723,20 +2822,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1443290736
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1443290735}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 38a0a31987a1d3944bf2300c2dd0f870, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TestInput
-  judgement: {fileID: 1443290737}
-  currentNote: {fileID: 0}
 --- !u!114 &1443290737
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2863,7 +2948,6 @@ MonoBehaviour:
   rythmManager: {fileID: 2091660994}
   noteGenerator: {fileID: 2091660996}
   measureGenerator: {fileID: 2091660998}
-  trainSpeedController: {fileID: 0}
   InputGuidePanel: {fileID: 470588034}
   selectionMeasureCount: 2
   beginOnStart: 1
@@ -3187,6 +3271,37 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -10, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2091660997}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1562650257
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1562650258}
+  m_Layer: 0
+  m_Name: Destination Position
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1562650258
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1562650257}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.49, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3996,56 +4111,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1867747530}
   m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1 &1928301014
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1928301016}
-  - component: {fileID: 1928301015}
-  m_Layer: 0
-  m_Name: GameManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1928301015
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1928301014}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 23847c4ecef7a594cb3b717136c6206f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TrainSpeedController
-  easySpeed: 10
-  normalSpeed: 20
-  hardSpeed: 30
-  NoteGenerator: {fileID: 0}
-  backgroundLoop: {fileID: 338482667}
-  judgement: {fileID: 0}
---- !u!4 &1928301016
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1928301014}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.48478, y: -0.45653, z: -6.09953}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2032774451
 GameObject:
   m_ObjectHideFlags: 0
@@ -4239,8 +4304,9 @@ GameObject:
   - component: {fileID: 2091660996}
   - component: {fileID: 2091660995}
   - component: {fileID: 2091660994}
-  - component: {fileID: 2091660993}
   - component: {fileID: 2091660998}
+  - component: {fileID: 2091660999}
+  - component: {fileID: 2091661000}
   m_Layer: 0
   m_Name: GameRoot
   m_TagString: Untagged
@@ -4248,27 +4314,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &2091660993
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2091660992}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: efef64b5b1c2f40618009881f7fa826f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::NoteGeneratorTest
-  rythmManager: {fileID: 2091660994}
-  noteGenerator: {fileID: 2091660996}
-  testWave:
-  - {fileID: 11400000, guid: a8c34013c5c994f62ab217de940f8b2b, type: 2}
-  - {fileID: 11400000, guid: 716cd542223d6498eaa41aff202ddaec, type: 2}
-  - {fileID: 11400000, guid: 9b60fc33bb3ff42a4923c1d03dd31d1d, type: 2}
-  - {fileID: 11400000, guid: e2659f393084145e1a382356776d8ad7, type: 2}
-  startAutomatically: 1
-  replayKey: 13
 --- !u!114 &2091660994
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4281,9 +4326,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b5c59c693e434e44a75e7d0539a7f08, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RythmManager
-  bpm: 180
+  bpm: 60
   playOnStart: 1
-  startDelay: 2
+  startDelay: 1.5
 --- !u!82 &2091660995
 AudioSource:
   m_ObjectHideFlags: 0
@@ -4400,6 +4445,9 @@ MonoBehaviour:
   NotePrefab: {fileID: 8800350183521160369, guid: 12f1baf78e5a20943aa87d87cf7212a0, type: 3}
   SpawnPoint: {fileID: 1535769379}
   JudgementPoint: {fileID: 1443290741}
+  DestinationPoint: {fileID: 1562650258}
+  fallbackPostJudgeDistance: 2
+  audioScheduleAheadTime: 0.1
 --- !u!4 &2091660997
 Transform:
   m_ObjectHideFlags: 0
@@ -4415,6 +4463,8 @@ Transform:
   m_Children:
   - {fileID: 1443290741}
   - {fileID: 1535769379}
+  - {fileID: 1562650258}
+  - {fileID: 436424262}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2091660998
@@ -4430,6 +4480,48 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MeasureGenerator
   rythmManager: {fileID: 2091660994}
+--- !u!114 &2091660999
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2091660992}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23847c4ecef7a594cb3b717136c6206f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TrainSpeedController
+  DifficultySpeed:
+  - 10
+  - 20
+  - 30
+  maxSpeed: 1000
+  initialSpeed: 60
+  currentSpeed: 0
+  NoteGenerator: {fileID: 2091660996}
+  backgroundLoop: {fileID: 338482667}
+  judgement: {fileID: 1443290737}
+--- !u!114 &2091661000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2091660992}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4df4f0d66cdaff64a87e51b16d6abb73, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ObstacleSpawner
+  obstaclePrefabs:
+  - {fileID: 836772444561234050, guid: 62c07bf4f02daa24da800776b35f4cf7, type: 3}
+  spawnPoint: {fileID: 436424262}
+  isTestMode: 0
+  testSpawnKey: 32
+  rythmManager: {fileID: 2091660994}
+  noteGenerator: {fileID: 2091660996}
+  Input: {fileID: 1443290742}
 --- !u!1001 &2744845822595469217
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4535,7 +4627,4 @@ SceneRoots:
   - {fileID: 2091660997}
   - {fileID: 2089457405}
   - {fileID: 338482668}
-  - {fileID: 436424262}
-  - {fileID: 1245889462}
   - {fileID: 1366218418}
-  - {fileID: 1928301016}

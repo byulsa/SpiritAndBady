@@ -49,7 +49,11 @@ public class TrainSpeedController : MonoBehaviour
             NoteGenerator.OnWaveFinished += OnWaveFinished;
         }
     }
-
+    private void Start()
+    {
+        currentSpeed = initialSpeed;
+        OnSpeedChanged?.Invoke(currentSpeed);
+    }
     private void OnDisable()
     {
         if (judgement != null)
