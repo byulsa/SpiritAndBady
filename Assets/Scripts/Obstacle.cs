@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Obstacle : MonoBehaviour
 {
-    [Header("Àå¾Ö¹° ¼³Á¤")]
+    [Header("ï¿½ï¿½Ö¹ï¿½ ï¿½ï¿½ï¿½ï¿½")]
     public float requiredSpeed = 50f;
 
     private BackgroundLoop backgroundLoop;
