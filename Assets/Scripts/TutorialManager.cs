@@ -51,6 +51,7 @@ public class TutorialManager : MonoBehaviour
     public void Show(bool bShow)
     {
         OnButtonCliked();
+        SetCursorInput(false);
         if (!bShow)
         {
             TutorialEnd();
@@ -64,7 +65,7 @@ public class TutorialManager : MonoBehaviour
     {
         if (Index != 0)
         {
-            TutorialPanels[Index - 1].SetActive(false);
+            Destroy(TutorialPanels[Index - 1]);
         }
         if (Index >= TutorialPanels.Length)
         {
