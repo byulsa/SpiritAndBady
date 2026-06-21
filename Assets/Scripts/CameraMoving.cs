@@ -14,6 +14,8 @@ public class CameraMoving : MonoBehaviour
     private Coroutine shakeCoroutine;
     private Coroutine zoomCoroutine;
 
+    [SerializeField] private float duration;
+    [SerializeField] private float magnitude;
     private void Start()
     {
         roomOriginPos = RoomCamera.transform.localPosition;
@@ -21,7 +23,7 @@ public class CameraMoving : MonoBehaviour
         roomOriginFov = RoomCamera.fieldOfView;
     }
 
-    public void Shake(float duration, float magnitude)
+    public void Shake()
     {
         if (shakeCoroutine != null)
         {

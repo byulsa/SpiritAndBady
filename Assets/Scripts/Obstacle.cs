@@ -66,13 +66,14 @@ public class Obstacle : MonoBehaviour
         if (speed >= requiredSpeed)
         {
             spawner.OnObstaclePassed();
+            StartCoroutine(DestroyRoutine());
         }
         else
         {
             spawner.OnObstacleFailed();
             Destroy(gameObject);
         }
-        StartCoroutine(DestroyRoutine());
+
     }
     private IEnumerator DestroyRoutine()
     {

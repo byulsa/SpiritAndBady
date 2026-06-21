@@ -138,7 +138,7 @@ public class TrainSpeedController : MonoBehaviour
         float elapsed = 0f;
         Vector3 startPos = trainOriginalPosition;
         Vector3 targetPos = trainOriginalPosition + new Vector3(moveDistance * 2.6f, 0f, 0f);
-        
+
         while (elapsed < moveDuration)
         {
             elapsed += Time.deltaTime;

@@ -5,8 +5,9 @@ using UnityEngine.Serialization;
 public class TrainRoad : MonoBehaviour
 {
     [Header("Road References")]
-    [FormerlySerializedAs("TrainRoads")]
-    [SerializeField] private Transform[] trainRoads;
+    // [FormerlySerializedAs("TrainRoads")]
+    // [SerializeField] private Transform[] trainRoads;
+    [SerializeField] private Mover[] Elements;
     [FormerlySerializedAs("StartPosition")]
     [SerializeField] private Transform startPosition;
     [FormerlySerializedAs("EndPosition")]
@@ -25,48 +26,39 @@ public class TrainRoad : MonoBehaviour
         if (endPosition == null)
             endPosition = transform.Find("EndPosition");
     }
-
+    void OnEnable()
+    {
+        foreach (Mover mover in Elements)
+        {
+            mover.OnEnd += HandleMoveEnd;
+        }
+    }
+    void OnDisable()
+    {
+        foreach (Mover mover in Elements)
+        {
+            mover.OnEnd -= HandleMoveEnd;
+        }
+    }
+    void HandleMoveEnd(Transform Target)
+    {
+        Target.position = startPosition.position;
+    }
     void Update()
     {
         if (!CanMove())
             return;
 
         Move();
-        CheckEnd();
+        // CheckEnd();
     }
 
     private bool CanMove()
     {
-        return trainRoads != null
-            && trainRoads.Length > 0
+        return Elements != null
+            && Elements.Length > 0
             && startPosition != null
             && endPosition != null;
-    }
-
-    private void CheckEnd()
-    {
-        Transform currentRoad = trainRoads[index];
-        if (currentRoad == null)
-        {
-            index = (index + 1) % trainRoads.Length;
-            return;
-        }
-
-        Vector3 moveDirection = (endPosition.position - startPosition.position).normalized;
-        bool reachedEnd = Vector3.Dot(
-            currentRoad.position - endPosition.position,
-            moveDirection
-        ) >= 0f;
-
-        if (!reachedEnd)
-            return;
-
-        float overshoot = Vector3.Dot(
-            currentRoad.position - endPosition.position,
-            moveDirection
-        );
-        currentRoad.position = startPosition.position + moveDirection * overshoot;
-        index = (index + 1) % trainRoads.Length;
     }
 
     private void Move()
@@ -74,10 +66,10 @@ public class TrainRoad : MonoBehaviour
         Vector3 moveDirection = (endPosition.position - startPosition.position).normalized;
         float moveDistance = moveSpeed * Time.deltaTime;
 
-        foreach (Transform road in trainRoads)
+        foreach (var mover in Elements)
         {
-            if (road != null)
-                road.position += moveDirection * moveDistance;
+            if (mover != null && mover.transform != null)
+                mover.transform.position += moveDirection * moveDistance;
         }
     }
 }

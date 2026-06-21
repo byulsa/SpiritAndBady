@@ -27,6 +27,7 @@ public class ObstacleSpawner : MonoBehaviour
     [SerializeField] private Transform trainTransform;
     [SerializeField] private HealthManager healthManager;
     [SerializeField] private TrainSpeedController trainSpeedController;
+    [SerializeField] private CameraMoving CameraShake;
 
     [Header("Sound")]
     [SerializeField] private AudioSource source;
@@ -83,6 +84,11 @@ public class ObstacleSpawner : MonoBehaviour
     {
         trainSpeedController?.OnObstacleResult(false);
         currentRequiredSpeed = Mathf.Max(currentRequiredSpeed - failDecrease, minRequiredSpeed);
+
+        if (CameraShake)
+        {
+            CameraShake.Shake();
+        }
 
         if (healthManager != null)
             healthManager.TakeDamage();
